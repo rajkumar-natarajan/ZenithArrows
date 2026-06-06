@@ -1,0 +1,158 @@
+{
+  "id": 2,
+  "name": "Obstacles",
+  "themeKey": "cyber",
+  "description": "Navigate around walls and special tiles on 5×5 and 6×6 grids",
+  "requiredStarsToUnlock": 15,
+  "isUnlocked": false,
+  "levels": [
+    {
+      "id": "w2_l001",
+      "worldID": 2,
+      "index": 1,
+      "gridRows": 5,
+      "gridCols": 5,
+      "arrows": [
+        {"row": 0, "col": 0, "direction": "right"},
+        {"row": 0, "col": 2, "direction": "down"},
+        {"row": 3, "col": 2, "direction": "right"},
+        {"row": 3, "col": 4, "direction": "up"},
+        {"row": 0, "col": 4, "direction": "down"},
+        {"row": 4, "col": 4, "direction": "left"},
+        {"row": 4, "col": 0, "direction": "up"},
+        {"row": 0, "col": 0, "direction": "down"}
+      ],
+      "obstacles": [
+        {"row": 2, "col": 2, "kind": "wall"}
+      ],
+      "difficulty": "easy",
+      "parMoves": 8,
+      "parTime": 80,
+      "diagonalsEnabled": false,
+      "title": "First Wall"
+    },
+    {
+      "id": "w2_l002",
+      "worldID": 2,
+      "index": 2,
+      "gridRows": 5,
+      "gridCols": 5,
+      "arrows": [
+        {"row": 0, "col": 0, "direction": "right"},
+        {"row": 0, "col": 4, "direction": "down"},
+        {"row": 4, "col": 4, "direction": "left"},
+        {"row": 4, "col": 0, "direction": "up"},
+        {"row": 1, "col": 1, "direction": "right"},
+        {"row": 1, "col": 3, "direction": "down"},
+        {"row": 3, "col": 3, "direction": "left"},
+        {"row": 3, "col": 1, "direction": "up"},
+        {"row": 2, "col": 0, "direction": "left"},
+        {"row": 2, "col": 4, "direction": "right"}
+      ],
+      "obstacles": [
+        {"row": 0, "col": 2, "kind": "wall"},
+        {"row": 4, "col": 2, "kind": "wall"}
+      ],
+      "difficulty": "medium",
+      "parMoves": 10,
+      "parTime": 100,
+      "diagonalsEnabled": false,
+      "title": "Double Block"
+    },
+    {
+      "id": "w2_l003",
+      "worldID": 2,
+      "index": 3,
+      "gridRows": 6,
+      "gridCols": 6,
+      "arrows": [
+        {"row": 0, "col": 0, "direction": "right"},
+        {"row": 0, "col": 2, "direction": "right"},
+        {"row": 0, "col": 4, "direction": "down"},
+        {"row": 2, "col": 4, "direction": "down"},
+        {"row": 4, "col": 4, "direction": "left"},
+        {"row": 4, "col": 2, "direction": "left"},
+        {"row": 4, "col": 0, "direction": "up"},
+        {"row": 2, "col": 0, "direction": "up"},
+        {"row": 1, "col": 2, "direction": "right"},
+        {"row": 3, "col": 3, "direction": "left"},
+        {"row": 2, "col": 3, "direction": "down"},
+        {"row": 3, "col": 2, "direction": "up"}
+      ],
+      "obstacles": [
+        {"row": 1, "col": 3, "kind": "wall"},
+        {"row": 3, "col": 1, "kind": "wall"},
+        {"row": 0, "col": 5, "kind": "wall"},
+        {"row": 5, "col": 0, "kind": "wall"}
+      ],
+      "difficulty": "medium",
+      "parMoves": 12,
+      "parTime": 120,
+      "diagonalsEnabled": false,
+      "title": "Maze Runner"
+    },
+    {
+      "id": "w2_l004",
+      "worldID": 2,
+      "index": 4,
+      "gridRows": 6,
+      "gridCols": 6,
+      "arrows": [
+        {"row": 0, "col": 0, "direction": "right"},
+        {"row": 0, "col": 5, "direction": "down"},
+        {"row": 5, "col": 5, "direction": "left"},
+        {"row": 5, "col": 0, "direction": "up"},
+        {"row": 1, "col": 0, "direction": "right"},
+        {"row": 1, "col": 4, "direction": "up"},
+        {"row": 0, "col": 4, "direction": "right"},
+        {"row": 2, "col": 1, "direction": "down"},
+        {"row": 4, "col": 1, "direction": "right"},
+        {"row": 4, "col": 3, "direction": "up"},
+        {"row": 3, "col": 3, "direction": "right"},
+        {"row": 3, "col": 5, "direction": "down"}
+      ],
+      "obstacles": [
+        {"row": 2, "col": 3, "kind": "ice"},
+        {"row": 3, "col": 2, "kind": "ice"},
+        {"row": 1, "col": 5, "kind": "wall"}
+      ],
+      "difficulty": "hard",
+      "parMoves": 12,
+      "parTime": 130,
+      "diagonalsEnabled": false,
+      "title": "Ice Slide"
+    },
+    {
+      "id": "w2_l005",
+      "worldID": 2,
+      "index": 5,
+      "gridRows": 6,
+      "gridCols": 6,
+      "arrows": [
+        {"row": 0, "col": 0, "direction": "right"},
+        {"row": 0, "col": 1, "direction": "down"},
+        {"row": 5, "col": 1, "direction": "right"},
+        {"row": 5, "col": 2, "direction": "up"},
+        {"row": 0, "col": 2, "direction": "right"},
+        {"row": 0, "col": 3, "direction": "down"},
+        {"row": 5, "col": 3, "direction": "right"},
+        {"row": 5, "col": 4, "direction": "up"},
+        {"row": 0, "col": 4, "direction": "right"},
+        {"row": 0, "col": 5, "direction": "down"},
+        {"row": 5, "col": 5, "direction": "left"},
+        {"row": 5, "col": 0, "direction": "up"},
+        {"row": 2, "col": 2, "direction": "right"},
+        {"row": 3, "col": 3, "direction": "left"}
+      ],
+      "obstacles": [
+        {"row": 2, "col": 4, "kind": "portal", "portalID": 1, "portalColor": "purple"},
+        {"row": 4, "col": 1, "kind": "portal", "portalID": 1, "portalColor": "purple"}
+      ],
+      "difficulty": "hard",
+      "parMoves": 14,
+      "parTime": 140,
+      "diagonalsEnabled": false,
+      "title": "Portal Puzzle"
+    }
+  ]
+}

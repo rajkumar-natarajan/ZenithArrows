@@ -1,0 +1,81 @@
+{
+  "id": 3,
+  "name": "Complexity",
+  "themeKey": "neon",
+  "description": "7×7 and 8×8 grids with color-coded arrows and advanced obstacles",
+  "requiredStarsToUnlock": 40,
+  "isUnlocked": false,
+  "levels": [
+    {
+      "id": "w3_l001",
+      "worldID": 3,
+      "index": 1,
+      "gridRows": 7,
+      "gridCols": 7,
+      "arrows": [
+        {"row": 0, "col": 0, "direction": "right", "color": "red"},
+        {"row": 0, "col": 3, "direction": "down",  "color": "blue"},
+        {"row": 3, "col": 6, "direction": "left",  "color": "green"},
+        {"row": 6, "col": 3, "direction": "up",    "color": "yellow"},
+        {"row": 0, "col": 6, "direction": "down",  "color": "white"},
+        {"row": 6, "col": 0, "direction": "right", "color": "white"},
+        {"row": 1, "col": 1, "direction": "right", "color": "red"},
+        {"row": 1, "col": 4, "direction": "down",  "color": "blue"},
+        {"row": 4, "col": 5, "direction": "left",  "color": "green"},
+        {"row": 5, "col": 2, "direction": "up",    "color": "yellow"},
+        {"row": 3, "col": 3, "direction": "right", "color": "purple"},
+        {"row": 3, "col": 4, "direction": "down",  "color": "orange"},
+        {"row": 5, "col": 4, "direction": "left",  "color": "purple"},
+        {"row": 5, "col": 3, "direction": "up",    "color": "orange"}
+      ],
+      "obstacles": [
+        {"row": 2, "col": 2, "kind": "wall"},
+        {"row": 2, "col": 4, "kind": "wall"},
+        {"row": 4, "col": 2, "kind": "wall"},
+        {"row": 4, "col": 4, "kind": "wall"}
+      ],
+      "difficulty": "hard",
+      "parMoves": 14,
+      "parTime": 150,
+      "diagonalsEnabled": false,
+      "title": "Color Storm"
+    },
+    {
+      "id": "w3_l002",
+      "worldID": 3,
+      "index": 2,
+      "gridRows": 8,
+      "gridCols": 8,
+      "arrows": [
+        {"row": 0, "col": 0, "direction": "right"},
+        {"row": 0, "col": 2, "direction": "right"},
+        {"row": 0, "col": 4, "direction": "right"},
+        {"row": 0, "col": 6, "direction": "down"},
+        {"row": 2, "col": 7, "direction": "down"},
+        {"row": 4, "col": 7, "direction": "down"},
+        {"row": 6, "col": 7, "direction": "left"},
+        {"row": 7, "col": 6, "direction": "left"},
+        {"row": 7, "col": 4, "direction": "left"},
+        {"row": 7, "col": 2, "direction": "left"},
+        {"row": 7, "col": 0, "direction": "up"},
+        {"row": 6, "col": 0, "direction": "up"},
+        {"row": 4, "col": 0, "direction": "up"},
+        {"row": 2, "col": 0, "direction": "right"},
+        {"row": 3, "col": 3, "direction": "right"},
+        {"row": 3, "col": 5, "direction": "down"},
+        {"row": 5, "col": 5, "direction": "left"},
+        {"row": 5, "col": 3, "direction": "up"}
+      ],
+      "obstacles": [
+        {"row": 0, "col": 7, "kind": "wall"},
+        {"row": 7, "col": 7, "kind": "ice"},
+        {"row": 3, "col": 4, "kind": "trap"}
+      ],
+      "difficulty": "expert",
+      "parMoves": 18,
+      "parTime": 180,
+      "diagonalsEnabled": false,
+      "title": "Labyrinth"
+    }
+  ]
+}

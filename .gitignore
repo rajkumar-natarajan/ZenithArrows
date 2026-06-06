@@ -1,0 +1,36 @@
+# Xcode build artifacts
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+*.xcworkspace/xcshareddata/
+DerivedData/
+build/
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Swift Package Manager
+.build/
+.swiftpm/
+
+# CocoaPods (not used, but guard)
+Pods/
+Podfile.lock
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+
+# Xcode
+*.hmap
+*.ipa
+*.xcuserstate
+*.moved-aside
+*.xccheckout
+
+# Build log
+*.xcactivitylog
+
+# generated project (regenerate with: xcodegen generate)
+# Keep the .xcodeproj committed for convenience
