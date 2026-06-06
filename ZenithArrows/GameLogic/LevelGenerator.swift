@@ -27,35 +27,29 @@ final class LevelGenerator {
         arrowCount: Int,
         difficulty: LevelDifficulty = .easy,
         worldID: Int = 0
-    ) -> LevelDefinition {
+    ) -> LevelDefinition? {
         var rng = SeededRNG(seed: seed)
         let placements = buildPlacements(rows: rows, cols: cols,
                                          count: arrowCount, rng: &rng)
+        guard !placements.isEmpty else { return nil }
         let parMoves = placements.count
         let parTime: TimeInterval = Double(parMoves) * 4.0
 
-        // Build a pseudo LevelDefinition from raw data
-        let levelData = """
-        {
-          "id": "gen_\(seed)",
-          "worldID": \(worldID),
-          "index": 0,
-          "gridRows": \(rows),
-          "gridCols": \(cols),
-          "arrows": \(arrowPlacementsJSON(placements)),
-          "obstacles": [],
-          "difficulty": "\(difficulty.rawValue)",
-          "parMoves": \(parMoves),
-          "parTime": \(parTime),
-          "diagonalsEnabled": false,
-          "title": "Daily \(seed)"
-        }
-        """
-
-        let decoder = JSONDecoder()
-        // swiftlint:disable:next force_try
-        return try! decoder.decode(LevelDefinition.self,
-                                   from: Data(levelData.utf8))
+        // Build LevelDefinition directly — no JSON round-trip, no force-try
+        return LevelDefinition(
+            id: "gen_\(seed)",
+            worldID: worldID,
+            index: 0,
+            gridRows: rows,
+            gridCols: cols,
+            arrows: placements,
+            obstacles: [],
+            difficulty: difficulty,
+            parMoves: parMoves,
+            parTime: parTime,
+            diagonalsEnabled: false,
+            title: "Daily \(seed)"
+        )
     }
 
     // MARK: - Core Algorithm (Reverse Simulation)
@@ -103,17 +97,6 @@ final class LevelGenerator {
             current = current + dir.delta
         }
         return true
-    }
-
-    // MARK: - JSON Helpers
-
-    private func arrowPlacementsJSON(_ placements: [ArrowPlacement]) -> String {
-        let items = placements.map {
-            """
-            {"row": \($0.row), "col": \($0.col), "direction": "\($0.direction.rawValue)"}
-            """
-        }
-        return "[\(items.joined(separator: ","))]"
     }
 }
 
