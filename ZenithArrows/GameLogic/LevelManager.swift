@@ -27,22 +27,70 @@ final class LevelManager: ObservableObject {
 
     private func loadAllWorlds() {
         let worldFiles = ["world1", "world2", "world3", "world4"]
-        worlds = worldFiles.compactMap { name in
+        var loaded = worldFiles.compactMap { name -> World? in
             guard let url = Bundle.main.url(forResource: name, withExtension: "json"),
-                  let data = try? Data(contentsOf: url),
-                  let world = try? decoder.decode(World.self, from: data) else {
+                  let data = try? Data(contentsOf: url) else {
+                print("[LevelManager] Missing bundle resource: \(name).json")
                 return nil
             }
-            return world
+            do {
+                return try decoder.decode(World.self, from: data)
+            } catch {
+                print("[LevelManager] Failed to decode \(name).json: \(error)")
+                return nil
+            }
         }
 
-        // Unlock world 1 by default
+        // Fallback: if no levels loaded from bundle, generate procedural worlds
+        if loaded.isEmpty {
+            loaded = buildFallbackWorlds()
+        }
+
+        worlds = loaded
+
+        // Always unlock world 1, level 1
         if !worlds.isEmpty {
             worlds[0].isUnlocked = true
             if !worlds[0].levels.isEmpty {
                 worlds[0].levels[0].isUnlocked = true
             }
         }
+    }
+
+    /// Builds procedural fallback worlds so the app is always playable even without bundle JSON.
+    private func buildFallbackWorlds() -> [World] {
+        let generator = LevelGenerator()
+        var levels: [LevelDefinition] = []
+        for i in 0..<15 {
+            if let lvl = generator.generate(
+                seed: 1000 + i,
+                rows: min(4 + i / 4, 6),
+                cols: min(4 + i / 4, 6),
+                arrowCount: 4 + i,
+                difficulty: i < 5 ? .tutorial : i < 10 ? .easy : .medium,
+                worldID: 1
+            ) {
+                var l = lvl
+                // Patch id/index for uniqueness
+                levels.append(LevelDefinition(
+                    id: "fb_\(i+1)",
+                    worldID: 1, index: i + 1,
+                    gridRows: l.gridRows, gridCols: l.gridCols,
+                    arrows: l.arrows, obstacles: [],
+                    difficulty: l.difficulty,
+                    parMoves: l.parMoves, parTime: l.parTime,
+                    diagonalsEnabled: false,
+                    title: "Level \(i + 1)"
+                ))
+            }
+        }
+        let world = World(id: 1, name: "Adventure",
+                          themeKey: "zen",
+                          description: "Procedurally generated puzzles",
+                          levels: levels,
+                          requiredStarsToUnlock: 0,
+                          isUnlocked: true)
+        return [world]
     }
 
     // MARK: - Progress Persistence

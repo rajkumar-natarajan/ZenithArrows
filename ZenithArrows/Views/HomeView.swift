@@ -13,6 +13,22 @@ struct HomeView: View {
     @State private var navigation: NavigationPath = NavigationPath()
     @State private var showSettings = false
     @State private var showShop = false
+    @State private var logoRotation: Double = 0
+    @State private var appeared = false
+
+    // First unlocked level that the player hasn't 3-starred yet
+    private var continueLevel: LevelDefinition? {
+        for world in levelManager.worlds where world.isUnlocked {
+            for level in world.levels where level.isUnlocked && level.bestStars < 3 {
+                return level
+            }
+        }
+        return levelManager.worlds.first?.levels.first
+    }
+
+    private var totalLevelCount: Int {
+        levelManager.worlds.flatMap(\.levels).count
+    }
 
     var body: some View {
         NavigationStack(path: $navigation) {
@@ -20,71 +36,16 @@ struct HomeView: View {
                 themeManager.current.backgroundGradient.ignoresSafeArea()
 
                 VStack(spacing: 0) {
-                    // MARK: Header
                     header
-
-                    Spacer(minLength: 20)
-
-                    // MARK: Logo / Title
+                    Spacer(minLength: 12)
                     logoArea
-
+                    Spacer(minLength: 28)
+                    menuButtons
                     Spacer(minLength: 32)
-
-                    // MARK: Main Actions
-                    VStack(spacing: 14) {
-                        // Play (continues or starts first unlocked level)
-                        MainMenuButton(
-                            title: "Play",
-                            subtitle: "Continue your journey",
-                            systemImage: "play.fill",
-                            accentColor: themeManager.current.accentColor
-                        ) {
-                            if let firstWorld = levelManager.worlds.first,
-                               let firstLevel = firstWorld.levels.first(where: \.isUnlocked) {
-                                navigation.append(Route.game(firstLevel))
-                            }
-                        }
-
-                        // Daily Challenge
-                        if let daily = levelManager.dailyChallenge {
-                            MainMenuButton(
-                                title: "Daily Challenge",
-                                subtitle: "New puzzle every day",
-                                systemImage: "calendar",
-                                accentColor: .orange
-                            ) {
-                                navigation.append(Route.game(daily))
-                            }
-                        }
-
-                        // Chapters
-                        MainMenuButton(
-                            title: "Chapters",
-                            subtitle: "\(progressMgr.totalStars) ★ collected",
-                            systemImage: "map",
-                            accentColor: .yellow
-                        ) {
-                            navigation.append(Route.worldSelect)
-                        }
-                    }
-                    .padding(.horizontal, 24)
-
-                    Spacer(minLength: 40)
-
-                    // MARK: Bottom Row
-                    HStack(spacing: 24) {
-                        BottomBarButton(systemImage: "bag.fill", label: "Shop") {
-                            showShop = true
-                        }
-                        BottomBarButton(systemImage: "gearshape.fill", label: "Settings") {
-                            showSettings = true
-                        }
-                        BottomBarButton(systemImage: "trophy.fill", label: "Leaderboard") {
-                            // Game Center Leaderboard
-                        }
-                    }
-                    .padding(.bottom, 32)
+                    bottomBar
                 }
+                .opacity(appeared ? 1 : 0)
+                .offset(y: appeared ? 0 : 20)
             }
             .navigationDestination(for: Route.self) { route in
                 switch route {
@@ -98,30 +59,34 @@ struct HomeView: View {
                         onLevelComplete: { _ in navigation.removeLast() },
                         onQuit: { navigation.removeLast() }
                     )
-                    .navigationBarHidden(true)
                 }
             }
         }
         .sheet(isPresented: $showSettings) { SettingsView() }
         .sheet(isPresented: $showShop) { ShopView() }
-        .onAppear { progressMgr.authenticateGameCenter() }
+        .onAppear {
+            progressMgr.authenticateGameCenter()
+            withAnimation(.easeOut(duration: 0.5)) { appeared = true }
+            // Continuous slow logo rotation
+            withAnimation(.linear(duration: 8).repeatForever(autoreverses: false)) {
+                logoRotation = 360
+            }
+        }
     }
 
     // MARK: - Subviews
 
     private var header: some View {
         HStack {
-            // Daily streak badge
             if progressMgr.dailyStreak > 1 {
-                Label("\(progressMgr.dailyStreak) day streak", systemImage: "flame.fill")
-                    .font(.system(size: 12, weight: .semibold, design: .rounded))
+                Label("\(progressMgr.dailyStreak)d streak", systemImage: "flame.fill")
+                    .font(.system(size: 11, weight: .semibold, design: .rounded))
                     .foregroundStyle(.orange)
-                    .padding(.horizontal, 10)
+                    .padding(.horizontal, 9)
                     .padding(.vertical, 5)
                     .background(Color.orange.opacity(0.15), in: Capsule())
             }
             Spacer()
-            // Stars count
             Label("\(progressMgr.totalStars)", systemImage: "star.fill")
                 .font(.system(size: 14, weight: .bold, design: .rounded))
                 .foregroundStyle(.yellow)
@@ -131,19 +96,86 @@ struct HomeView: View {
     }
 
     private var logoArea: some View {
-        VStack(spacing: 6) {
-            Text("↑")
-                .font(.system(size: 64))
-                .rotationEffect(.degrees(45))
-                .foregroundStyle(themeManager.current.accentColor)
+        VStack(spacing: 8) {
+            // Rotating arrow emblem
+            ZStack {
+                Circle()
+                    .fill(themeManager.current.accentColor.opacity(0.12))
+                    .frame(width: 80, height: 80)
+                Text("↑")
+                    .font(.system(size: 44, weight: .black))
+                    .foregroundStyle(themeManager.current.accentColor)
+                    .rotationEffect(.degrees(logoRotation + 45))
+            }
+
             Text("ZenithArrows")
-                .font(.system(size: 34, weight: .black, design: .rounded))
+                .font(.system(size: 32, weight: .black, design: .rounded))
                 .foregroundStyle(themeManager.current.textColor)
+
             Text("LOGIC PUZZLE")
-                .font(.system(size: 11, weight: .semibold, design: .rounded))
-                .foregroundStyle(themeManager.current.textColor.opacity(0.45))
+                .font(.system(size: 10, weight: .semibold, design: .rounded))
+                .foregroundStyle(themeManager.current.textColor.opacity(0.4))
                 .kerning(3)
         }
+    }
+
+    private var menuButtons: some View {
+        VStack(spacing: 12) {
+            // Continue / Play
+            if let level = continueLevel {
+                let worldName = levelManager.worlds.first(where: { $0.id == level.worldID })?.name ?? "World"
+                MainMenuButton(
+                    title: "Continue",
+                    subtitle: "\(worldName) · Level \(level.index)",
+                    systemImage: "play.fill",
+                    accentColor: themeManager.current.accentColor
+                ) {
+                    HapticManager.shared.buttonTap()
+                    navigation.append(Route.game(level))
+                }
+            }
+
+            // Daily Challenge
+            if let daily = levelManager.dailyChallenge {
+                MainMenuButton(
+                    title: "Daily Challenge",
+                    subtitle: "Fresh puzzle every day",
+                    systemImage: "calendar",
+                    accentColor: .orange
+                ) {
+                    HapticManager.shared.buttonTap()
+                    navigation.append(Route.game(daily))
+                }
+            }
+
+            // Chapters
+            MainMenuButton(
+                title: "Chapters",
+                subtitle: "\(progressMgr.totalStars) ★  ·  \(totalLevelCount) levels",
+                systemImage: "map",
+                accentColor: .yellow
+            ) {
+                HapticManager.shared.buttonTap()
+                navigation.append(Route.worldSelect)
+            }
+        }
+        .padding(.horizontal, 22)
+    }
+
+    private var bottomBar: some View {
+        HStack(spacing: 32) {
+            BottomBarButton(systemImage: "bag.fill", label: "Shop") {
+                showShop = true
+            }
+            BottomBarButton(systemImage: "gearshape.fill", label: "Settings") {
+                showSettings = true
+            }
+            BottomBarButton(systemImage: "trophy.fill", label: "Leaderboard") {
+                HapticManager.shared.buttonTap()
+                // TODO: present Game Center Leaderboard
+            }
+        }
+        .padding(.bottom, 36)
     }
 }
 
@@ -175,35 +207,43 @@ struct MainMenuButton: View {
     let action: () -> Void
     @StateObject private var theme = ThemeManager.shared
 
+    @State private var pressed = false
+
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 16) {
+            HStack(spacing: 14) {
                 Image(systemName: systemImage)
-                    .font(.system(size: 22, weight: .semibold))
+                    .font(.system(size: 20, weight: .semibold))
                     .foregroundStyle(accentColor)
-                    .frame(width: 44, height: 44)
-                    .background(accentColor.opacity(0.15), in: Circle())
+                    .frame(width: 42, height: 42)
+                    .background(accentColor.opacity(0.14), in: Circle())
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
-                        .font(.system(size: 18, weight: .bold, design: .rounded))
+                        .font(.system(size: 17, weight: .bold, design: .rounded))
                         .foregroundStyle(theme.current.textColor)
                     Text(subtitle)
-                        .font(.system(size: 12, weight: .regular, design: .rounded))
-                        .foregroundStyle(theme.current.textColor.opacity(0.5))
+                        .font(.system(size: 12, design: .rounded))
+                        .foregroundStyle(theme.current.textColor.opacity(0.45))
                 }
 
                 Spacer()
 
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(theme.current.textColor.opacity(0.3))
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(theme.current.textColor.opacity(0.25))
             }
-            .padding(.horizontal, 18)
-            .padding(.vertical, 14)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 13)
             .background(theme.current.buttonBackground, in: RoundedRectangle(cornerRadius: 16))
+            .scaleEffect(pressed ? 0.97 : 1.0)
         }
         .buttonStyle(.plain)
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in withAnimation(.easeIn(duration: 0.08)) { pressed = true } }
+                .onEnded   { _ in withAnimation(.easeOut(duration: 0.15)) { pressed = false } }
+        )
     }
 }
 
@@ -217,11 +257,11 @@ struct BottomBarButton: View {
         Button(action: action) {
             VStack(spacing: 4) {
                 Image(systemName: systemImage)
-                    .font(.system(size: 22))
+                    .font(.system(size: 20))
                     .foregroundStyle(theme.current.accentColor)
                 Text(label)
-                    .font(.system(size: 10, weight: .medium, design: .rounded))
-                    .foregroundStyle(theme.current.textColor.opacity(0.5))
+                    .font(.system(size: 9, weight: .medium, design: .rounded))
+                    .foregroundStyle(theme.current.textColor.opacity(0.45))
             }
         }
         .buttonStyle(.plain)

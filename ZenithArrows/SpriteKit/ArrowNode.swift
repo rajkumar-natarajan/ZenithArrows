@@ -87,21 +87,36 @@ final class ArrowNode: SKNode {
     // MARK: - Visual State Updates
 
     func setHighlighted(_ highlighted: Bool) {
-        let targetAlpha: CGFloat = highlighted ? 1.0 : 0.6
         let scaleTarget: CGFloat = highlighted ? 1.12 : 1.0
-        let pulseAction = highlighted ? SKAction.repeatForever(
-            SKAction.sequence([
-                SKAction.fadeAlpha(to: 0.6, duration: 0.4),
-                SKAction.fadeAlpha(to: 1.0, duration: 0.4)
-            ])
-        ) : nil
-
         bodyNode.removeAction(forKey: "pulse")
+        bodyNode.removeAction(forKey: "moveablePulse")
         bodyNode.run(SKAction.scale(to: scaleTarget, duration: 0.15))
-        glowNode.run(SKAction.fadeAlpha(to: targetAlpha, duration: 0.15))
-        if let pulse = pulseAction {
+        glowNode.run(SKAction.fadeAlpha(to: highlighted ? 1.0 : 0.6, duration: 0.15))
+        if highlighted {
+            let pulse = SKAction.repeatForever(SKAction.sequence([
+                SKAction.fadeAlpha(to: 0.5, duration: 0.4),
+                SKAction.fadeAlpha(to: 1.0, duration: 0.4)
+            ]))
             bodyNode.run(pulse, withKey: "pulse")
         }
+    }
+
+    /// Brief moveable-arrow ping: tiny scale-up then back, repeated a few times
+    func pulseMoveable(briefly: Bool) {
+        bodyNode.removeAction(forKey: "moveablePulse")
+        let ping = SKAction.sequence([
+            SKAction.scale(to: 1.08, duration: 0.18),
+            SKAction.scale(to: 1.00, duration: 0.18)
+        ])
+        let action: SKAction = briefly
+            ? SKAction.sequence([ping, ping, ping])
+            : SKAction.repeatForever(ping)
+        bodyNode.run(action, withKey: "moveablePulse")
+    }
+
+    func stopMoveablePulse() {
+        bodyNode.removeAction(forKey: "moveablePulse")
+        bodyNode.run(SKAction.scale(to: 1.0, duration: 0.1))
     }
 
     func setWrongTap() {

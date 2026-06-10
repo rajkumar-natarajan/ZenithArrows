@@ -1,7 +1,6 @@
 // GameBoardView.swift
 // ZenithArrows
 // SwiftUI wrapper that embeds the SpriteKit GameScene.
-// This view owns the GameState and wires up all dependencies.
 
 import SwiftUI
 import SpriteKit
@@ -9,7 +8,7 @@ import SpriteKit
 struct GameBoardView: View {
 
     let levelDefinition: LevelDefinition
-    var onLevelComplete: ((Int) -> Void)? = nil  // stars
+    var onLevelComplete: ((Int) -> Void)? = nil
     var onQuit: (() -> Void)? = nil
 
     @StateObject private var gameState: GameState
@@ -17,13 +16,18 @@ struct GameBoardView: View {
 
     private let moveValidator = MoveValidator()
     private let hintEngine    = HintEngine()
-    private let haptic        = HapticManager.shared
-    private let audio         = AudioManager.shared
 
     @State private var scene: GameScene?
     @State private var showPause = false
     @State private var showEndLevel = false
     @State private var completedStars = 0
+    @State private var showTutorialStep: Int? = nil
+    @State private var sceneSize: CGSize = .zero
+
+    private var isTutorialLevel: Bool {
+        levelDefinition.difficulty == .tutorial &&
+        levelDefinition.index <= 5
+    }
 
     init(levelDefinition: LevelDefinition,
          onLevelComplete: ((Int) -> Void)? = nil,
@@ -36,51 +40,67 @@ struct GameBoardView: View {
 
     var body: some View {
         ZStack {
-            // MARK: Background
-            themeManager.current.backgroundGradient
-                .ignoresSafeArea()
+            themeManager.current.backgroundGradient.ignoresSafeArea()
 
             VStack(spacing: 0) {
-                // MARK: HUD
                 GameHUDView(
                     gameState: gameState,
+                    levelTitle: levelDefinition.title ?? "Level \(levelDefinition.index)",
                     onPause: {
-                        haptic.buttonTap()
+                        HapticManager.shared.buttonTap()
                         gameState.pause()
                         showPause = true
                     },
                     onUndo: {
                         guard gameState.canUndo else { return }
-                        haptic.buttonTap()
-                        audio.play(.buttonTap)
+                        HapticManager.shared.buttonTap()
+                        AudioManager.shared.play(.buttonTap)
                         gameState.undo()
                         scene?.rebuild()
                     },
                     onHint: {
-                        haptic.buttonTap()
-                        audio.play(.hint)
+                        HapticManager.shared.buttonTap()
+                        AudioManager.shared.play(.hint)
                         gameState.useHint(hintEngine: hintEngine)
                     }
                 )
-                .padding(.top, 8)
+                .padding(.top, 4)
 
-                // MARK: SpriteKit Game Board
                 GeometryReader { geo in
                     SpriteView(scene: makeScene(size: geo.size),
                                preferredFramesPerSecond: 120,
                                options: [.allowsTransparency])
                         .frame(width: geo.size.width, height: geo.size.height)
                         .background(Color.clear)
+                        .onAppear { sceneSize = geo.size }
                 }
+            }
+
+            // Tutorial overlay
+            if let step = showTutorialStep, step < tutorialSteps.count {
+                Color.black.opacity(0.4).ignoresSafeArea()
+                    .transition(.opacity)
+                TutorialOverlayView(step: tutorialSteps[step]) {
+                    withAnimation {
+                        let next = step + 1
+                        showTutorialStep = next < tutorialSteps.count ? next : nil
+                        if showTutorialStep == nil { beginPlaying() }
+                    }
+                }
+                .transition(.scale.combined(with: .opacity))
             }
         }
         .onAppear {
-            gameState.phase = .playing
-            gameState.startTimer()
+            if isTutorialLevel && levelDefinition.index == 1 {
+                showTutorialStep = 0
+            } else {
+                beginPlaying()
+            }
         }
         .onChange(of: gameState.phase) { _, newPhase in
             handlePhaseChange(newPhase)
         }
+        .navigationBarHidden(true)
         .fullScreenCover(isPresented: $showPause) {
             PauseMenuView(
                 gameState: gameState,
@@ -104,7 +124,7 @@ struct GameBoardView: View {
                 stars: completedStars,
                 moves: gameState.moves,
                 time: gameState.elapsedTime,
-                levelID: levelDefinition.id,
+                levelTitle: levelDefinition.title ?? "Level \(levelDefinition.index)",
                 onNextLevel: {
                     showEndLevel = false
                     onLevelComplete?(completedStars)
@@ -122,7 +142,13 @@ struct GameBoardView: View {
         }
     }
 
-    // MARK: - Scene Construction
+    // MARK: - Helpers
+
+    private func beginPlaying() {
+        guard gameState.phase == .idle else { return }
+        gameState.phase = .playing
+        gameState.startTimer()
+    }
 
     @MainActor
     private func makeScene(size: CGSize) -> GameScene {
@@ -130,15 +156,13 @@ struct GameBoardView: View {
         let s = GameScene(size: size)
         s.scaleMode = .resizeFill
         s.backgroundColor = .clear
-        s.gameState    = gameState
+        s.gameState     = gameState
         s.moveValidator = moveValidator
-        s.hintEngine   = hintEngine
-        s.theme        = themeManager.current
+        s.hintEngine    = hintEngine
+        s.theme         = themeManager.current
         scene = s
         return s
     }
-
-    // MARK: - Phase Handling
 
     private func handlePhaseChange(_ phase: GamePhase) {
         switch phase {
@@ -146,12 +170,11 @@ struct GameBoardView: View {
             completedStars = stars
             LevelManager.shared.saveProgress(levelID: levelDefinition.id, stars: stars)
             ProgressManager.shared.recordLevelComplete(stars: stars, moves: gameState.moves)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.9) {
                 showEndLevel = true
             }
         case .levelFailed:
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
-                // Show restart prompt via pause menu in failed state
                 showPause = true
             }
         default: break
