@@ -1,6 +1,38 @@
 // ProgressManager.swift
 // ZenithArrows
-// Tracks lifetime stats, IAP entitlements, and daily streak.
+//
+// Tracks lifetime player statistics, IAP entitlements, and daily streak.
+//
+// ## Stored Stats (UserDefaults key: `zenith_stats_v1`)
+//
+// | Property         | Description                              |
+// |-----------------|------------------------------------------|
+// | `totalStars`    | Cumulative stars across all levels       |
+// | `totalMoves`    | Cumulative tap count                     |
+// | `dailyStreak`   | Consecutive days played                  |
+// | `hintsOwned`    | Purchasable hint inventory               |
+// | `lastPlayedDate`| Used for streak delta calculation        |
+//
+// ## Streak Logic
+//
+// On load: compare `lastPlayedDate` to today.
+// - dayDiff == 1 → streak++
+// - dayDiff == 0 → unchanged (same day)
+// - dayDiff  > 1 → reset to 1
+//
+// ## Feature Integrations
+//
+// - Feature 9 (Streak Rewards): `checkStreakRewards()` delegates to
+//   `StreakRewardManager.shared`.
+// - Feature 10 (Achievements): `refreshAchievements(...)` calls
+//   `AchievementManager.shared.update(...)` with current lifetime stats.
+// - Feature 13 (Theme Unlocks): `recordLevelComplete` calls
+//   `ThemeManager.shared.checkStarUnlocks(totalStars:)`.
+//
+// ## GameCenter
+//
+// `reportToGameCenter` posts the `zenith_total_stars` leaderboard score.
+// `authenticateGameCenter()` should be called on app launch.
 
 import Foundation
 import Combine
@@ -60,6 +92,10 @@ final class ProgressManager: ObservableObject {
         totalMoves += moves
         save()
         reportToGameCenter(stars: stars)
+        // Feature 13 – check star-gated theme unlocks
+        ThemeManager.shared.checkStarUnlocks(totalStars: totalStars)
+        // Feature 10 – refresh achievements
+        refreshAchievements()
     }
 
     func addHints(_ count: Int) {
@@ -70,6 +106,29 @@ final class ProgressManager: ObservableObject {
     func useHint() {
         hintsOwned = max(0, hintsOwned - 1)
         save()
+    }
+
+    // Feature 9 – streak check (call on app launch)
+    func checkStreakRewards() {
+        StreakRewardManager.shared.checkStreakRewards(currentStreak: dailyStreak)
+    }
+
+    // Feature 10 – trigger achievement evaluation
+    func refreshAchievements(comboMax: Int = 0, timedCompletions: Int = 0, levelStars: [String: Int] = [:], worlds: [World] = []) {
+        let levelStarsMap = levelStars.isEmpty
+            ? (LevelManager.shared.worlds.flatMap { $0.levels }
+                .reduce(into: [String: Int]()) { $0[$1.id] = $1.bestStars })
+            : levelStars
+        let worldsArr = worlds.isEmpty ? LevelManager.shared.worlds : worlds
+        AchievementManager.shared.update(
+            stars: totalStars,
+            moves: totalMoves,
+            streak: dailyStreak,
+            comboMax: comboMax,
+            timedCompletions: timedCompletions,
+            levelStars: levelStarsMap,
+            worlds: worldsArr
+        )
     }
 
     // MARK: - Daily Streak

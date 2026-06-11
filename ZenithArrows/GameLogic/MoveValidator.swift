@@ -1,6 +1,30 @@
 // MoveValidator.swift
 // ZenithArrows
-// Pure logic — determines whether a given arrow can be slid out right now.
+//
+// Pure logic layer — determines whether a given arrow can legally slide right now.
+// Stateless; all methods are pure functions over the provided `GridModel`.
+//
+// ## API
+//
+// - `validateMove(arrow:in:) → SlidePath?`
+//   Returns the computed `SlidePath` if the arrow is legal to tap, or `nil` if:
+//     • Arrow is already removed
+//     • Arrow type is `.locked`
+//     • Arrow type is `.heavy` and row/column is not fully clear
+//     • `GridModel.slidePath(for:)` returns nil (path is blocked)
+//
+// - `moveableArrows(in:) → [Arrow]`
+//   Convenience filter: all active arrows with a non-nil `validateMove`.
+//
+// - `buildDependencyGraph(for:in:) → [UUID: Set<UUID>]`
+//   For each arrow, computes the set of other arrows blocking its path.
+//   Used by `HintEngine` for topological sort and by `ComboEngine` for
+//   cascade detection.
+//
+// ## Heavy Arrow Rule
+//
+// A `.heavy` arrow pointing left/right requires its entire row to be
+// free of other arrows.  Pointing up/down requires its entire column to be free.
 
 import Foundation
 

@@ -1,6 +1,29 @@
 // GameState.swift
 // ZenithArrows
-// Observable game session state — source of truth for a live level.
+//
+// Observable game session state — single source of truth for a live level.
+//
+// ## Responsibilities
+//
+// - Holds all runtime state: `grid`, `phase`, `moves`, `mistakes`, `lives`,
+//   `elapsedTime`, `hintsRemaining`.
+// - Manages the Combine-backed stopwatch (`startTimer` / `stopTimer`).
+// - Routes taps via `handleTap(at:moveValidator:)`, which validates, commits,
+//   and fires the win-detection pipeline.
+// - Maintains an undo stack (max 10 `MoveRecord` snapshots).
+//
+// ## Feature Additions
+//
+// - Feature 2 (Combos): owns a `ComboEngine` instance evaluated after each removal.
+// - Feature 5 (Replay): owns a `ReplayEngine` that records each `MoveRecord`.
+// - Feature 15 (Undo Highlight): `undoReturnedArrowID` published for 700 ms.
+// - Feature 16 (Par Indicator): `parMoves`, `isUnderPar`, `movesOverPar`.
+// - Feature 17 (Free Hint): `isFreeHintReady`, `freeHintCooldownLabel`,
+//   `useFreeHint(hintEngine:)` — 30-minute cooldown, does not consume paid hints.
+//
+// ## Thread Safety
+//
+// Decorated `@MainActor`; all mutations must occur on the main thread.
 
 import Foundation
 import Combine
@@ -56,6 +79,24 @@ final class GameState: ObservableObject {
 
     // Tracks IDs of arrows committed in the current animation frame
     private var pendingRemovalIDs: Set<UUID> = []
+
+    // MARK: Feature 2 – Combo Engine
+    let comboEngine = ComboEngine()
+
+    // MARK: Feature 5 – Replay Engine
+    let replayEngine = ReplayEngine()
+
+    // MARK: Feature 15 – Smart Undo Highlight
+    @Published var undoReturnedArrowID: UUID? = nil
+
+    // MARK: Feature 16 – Par Indicator
+    var parMoves: Int { levelDefinition.parMoves }
+    var movesOverPar: Int { moves - parMoves }
+    var isUnderPar: Bool { moves < parMoves }
+
+    // MARK: Feature 17 – Free Hint Cooldown
+    @Published var freeHintAvailableAt: Date? = nil
+    private let freeHintCooldown: TimeInterval = 1800  // 30 minutes
 
     init(levelDefinition: LevelDefinition) {
         self.levelDefinition = levelDefinition
@@ -138,9 +179,15 @@ final class GameState: ObservableObject {
         phase = .animating
         pendingRemovalIDs.insert(arrow.id)
 
+        // Feature 5 – record move for replay
+        replayEngine.record(arrow: arrow, stepIndex: moves)
+
         arrow.isRemoved = true
         grid.remove(arrowID: arrow.id)
         lastRemovedArrowID = arrow.id
+
+        // Feature 2 – evaluate combo cascade
+        comboEngine.evaluate(afterRemovingID: arrow.id, in: grid)
 
         // Win check: if no active arrows remain, declare victory
         if grid.activeArrows.isEmpty {
@@ -192,12 +239,21 @@ final class GameState: ObservableObject {
     func undo() {
         guard !undoStack.isEmpty, phase == .playing else { return }
         let record = undoStack.removeLast()
+
+        // Feature 15 – highlight the arrow that returned
+        undoReturnedArrowID = record.arrowID
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 700_000_000)
+            if undoReturnedArrowID == record.arrowID { undoReturnedArrowID = nil }
+        }
+
         grid = record.gridSnapshot
         moves = record.movesAtTime
         mistakes = record.mistakesAtTime
         lives = min(3, lives + 1) // restore one life on undo
         allArrows = grid.activeArrows
         highlightedArrowID = nil
+        comboEngine.reset()
     }
 
     private func pushUndo(arrowID: UUID) {
@@ -221,6 +277,9 @@ final class GameState: ObservableObject {
         undoStack = []; pendingRemovalIDs = []
         highlightedArrowID = nil; wrongTapArrowID = nil
         _pendingWinStars = nil
+        undoReturnedArrowID = nil
+        comboEngine.reset()
+        replayEngine.clearRecording()
         buildGrid()
         phase = .playing
         startTimer()
@@ -246,6 +305,36 @@ final class GameState: ObservableObject {
         guard hintsRemaining > 0, phase == .playing else { return }
         if let id = hintEngine.nextSafeMove(in: grid) {
             hintsRemaining -= 1
+            highlightedArrowID = id
+            Task { @MainActor in
+                try? await Task.sleep(nanoseconds: 3_000_000_000)
+                if highlightedArrowID == id { highlightedArrowID = nil }
+            }
+        }
+    }
+
+    // MARK: Feature 17 – Free Hint (cooldown-based)
+
+    /// Whether the cooldown-based free hint is available right now.
+    var isFreeHintReady: Bool {
+        guard let availableAt = freeHintAvailableAt else { return true }
+        return Date() >= availableAt
+    }
+
+    /// Remaining cooldown string for display (e.g. "24m 15s").
+    var freeHintCooldownLabel: String {
+        guard let availableAt = freeHintAvailableAt, !isFreeHintReady else { return "" }
+        let remaining = Int(availableAt.timeIntervalSinceNow)
+        let m = remaining / 60
+        let s = remaining % 60
+        return m > 0 ? "\(m)m \(s)s" : "\(s)s"
+    }
+
+    /// Use the free hint without consuming from hintsRemaining.
+    func useFreeHint(hintEngine: HintEngine) {
+        guard isFreeHintReady, phase == .playing else { return }
+        if let id = hintEngine.nextSafeMove(in: grid) {
+            freeHintAvailableAt = Date().addingTimeInterval(freeHintCooldown)
             highlightedArrowID = id
             Task { @MainActor in
                 try? await Task.sleep(nanoseconds: 3_000_000_000)

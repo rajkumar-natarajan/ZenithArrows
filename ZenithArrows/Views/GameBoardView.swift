@@ -1,6 +1,8 @@
 // GameBoardView.swift
 // ZenithArrows
 // SwiftUI wrapper that embeds the SpriteKit GameScene.
+// Updated: Feature 11 (trail overlay), Feature 15 (undo highlight),
+//          Feature 17 (free hint), Feature 5 (replay button).
 
 import SwiftUI
 import SpriteKit
@@ -13,6 +15,7 @@ struct GameBoardView: View {
 
     @StateObject private var gameState: GameState
     @StateObject private var themeManager = ThemeManager.shared
+    @StateObject private var trailVM = TrailEffectViewModel()     // Feature 11
 
     private let moveValidator = MoveValidator()
     private let hintEngine    = HintEngine()
@@ -23,6 +26,7 @@ struct GameBoardView: View {
     @State private var completedStars = 0
     @State private var showTutorialStep: Int? = nil
     @State private var sceneSize: CGSize = .zero
+    @State private var showReplay = false   // Feature 5
 
     private var isTutorialLevel: Bool {
         levelDefinition.difficulty == .tutorial &&
@@ -62,17 +66,34 @@ struct GameBoardView: View {
                         HapticManager.shared.buttonTap()
                         AudioManager.shared.play(.hint)
                         gameState.useHint(hintEngine: hintEngine)
+                    },
+                    onFreeHint: {  // Feature 17
+                        HapticManager.shared.buttonTap()
+                        AudioManager.shared.play(.hint)
+                        gameState.useFreeHint(hintEngine: hintEngine)
                     }
                 )
                 .padding(.top, 4)
 
                 GeometryReader { geo in
-                    SpriteView(scene: makeScene(size: geo.size),
-                               preferredFramesPerSecond: 120,
-                               options: [.allowsTransparency])
-                        .frame(width: geo.size.width, height: geo.size.height)
-                        .background(Color.clear)
-                        .onAppear { sceneSize = geo.size }
+                    ZStack {
+                        SpriteView(scene: makeScene(size: geo.size),
+                                   preferredFramesPerSecond: 120,
+                                   options: [.allowsTransparency])
+                            .frame(width: geo.size.width, height: geo.size.height)
+                            .background(Color.clear)
+                            .onAppear { sceneSize = geo.size }
+
+                        // Feature 11 – Trail effect overlay
+                        TrailEffectView(viewModel: trailVM)
+
+                        // Feature 15 – Undo return highlight overlay label
+                        if let undoID = gameState.undoReturnedArrowID {
+                            UndoReturnLabel()
+                                .transition(.scale.combined(with: .opacity))
+                                .id(undoID)
+                        }
+                    }
                 }
             }
 
@@ -125,6 +146,9 @@ struct GameBoardView: View {
                 moves: gameState.moves,
                 time: gameState.elapsedTime,
                 levelTitle: levelDefinition.title ?? "Level \(levelDefinition.index)",
+                replayEngine: gameState.replayEngine,     // Feature 5
+                hintEngine: hintEngine,
+                grid: gameState.grid,
                 onNextLevel: {
                     showEndLevel = false
                     onLevelComplete?(completedStars)
@@ -178,6 +202,23 @@ struct GameBoardView: View {
                 showPause = true
             }
         default: break
+        }
+    }
+}
+
+// MARK: – Feature 15 Undo Return Label
+
+private struct UndoReturnLabel: View {
+    var body: some View {
+        VStack {
+            Spacer()
+            Text("↩ Arrow returned")
+                .font(.system(size: 12, weight: .semibold, design: .rounded))
+                .foregroundStyle(.white)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 7)
+                .background(.black.opacity(0.7), in: Capsule())
+                .padding(.bottom, 20)
         }
     }
 }

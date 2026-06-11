@@ -1,6 +1,25 @@
 // ArrowModel.swift
 // ZenithArrows
-// Core data model representing a single arrow on the grid.
+//
+// Core data model representing a single arrow on the game grid.
+//
+// ## Key Types
+//
+// - `ArrowDirection`: 8 cardinal + diagonal directions with movement deltas,
+//   rotation degrees for rendering, and SF Symbol names.
+// - `ArrowType`: standard | ice | heavy | locked | rotatable (Feature 3) |
+//   snake (Feature 4).
+// - `ArrowColor`: 7 colours used for portal pairing (white → no portal).
+// - `GridPosition`: Hashable (row, col) coordinate struct with `+` operator.
+// - `Arrow`: `ObservableObject` entity with full `Codable` support for
+//   undo-stack serialisation.
+//
+// ## Feature Extensions
+//
+// - Rotatable arrows (Feature 3): `rotateClockwise/CounterClockwise(diagonalsEnabled:)`
+//   cycles through cardinal or all-8 directions; no-ops on non-rotatable types.
+// - Snake arrows (Feature 4): `addSegment(_:)`, `head`, `tail`, `isSnake`
+//   properties for multi-cell arrow management.
 
 import Foundation
 import SwiftUI
@@ -163,4 +182,51 @@ final class Arrow: ObservableObject, Identifiable, Codable {
         a.segments = segments
         return a
     }
+}
+
+// MARK: - Feature 3: Rotatable Arrow Support
+
+extension Arrow {
+    /// All clockwise-rotation steps: up→right→down→left→up
+    static let cardinalRotationOrder: [ArrowDirection] = [.up, .right, .down, .left]
+    /// All 8-direction clockwise steps
+    static let fullRotationOrder: [ArrowDirection] = [
+        .up, .upRight, .right, .downRight, .down, .downLeft, .left, .upLeft
+    ]
+
+    /// Rotates a rotatable arrow one step clockwise.
+    /// No-op for non-rotatable arrows.
+    func rotateClockwise(diagonalsEnabled: Bool = false) {
+        guard type == .rotatable else { return }
+        let order = diagonalsEnabled ? Arrow.fullRotationOrder : Arrow.cardinalRotationOrder
+        guard let idx = order.firstIndex(of: direction) else { return }
+        direction = order[(idx + 1) % order.count]
+    }
+
+    /// Rotates a rotatable arrow one step counter-clockwise.
+    func rotateCounterClockwise(diagonalsEnabled: Bool = false) {
+        guard type == .rotatable else { return }
+        let order = diagonalsEnabled ? Arrow.fullRotationOrder : Arrow.cardinalRotationOrder
+        guard let idx = order.firstIndex(of: direction) else { return }
+        direction = order[(idx + order.count - 1) % order.count]
+    }
+}
+
+// MARK: - Feature 4: Snake Arrow Support
+
+extension Arrow {
+    /// Whether this arrow spans multiple grid cells.
+    var isSnake: Bool { type == .snake && segments.count > 1 }
+
+    /// Add a segment position to a snake arrow.
+    func addSegment(_ position: GridPosition) {
+        guard type == .snake else { return }
+        if !segments.contains(position) { segments.append(position) }
+    }
+
+    /// The head segment (the cell the arrow "faces" from).
+    var head: GridPosition { segments.first ?? position }
+
+    /// The tail segment (last occupied cell).
+    var tail: GridPosition { segments.last ?? position }
 }

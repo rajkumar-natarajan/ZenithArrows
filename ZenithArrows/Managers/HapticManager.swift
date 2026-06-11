@@ -1,6 +1,23 @@
 // HapticManager.swift
 // ZenithArrows
-// Wraps Core Haptics for premium tactile feedback.
+//
+// Wraps Core Haptics for premium tactile feedback with graceful degradation.
+//
+// ## Feedback Patterns
+//
+// | Method         | Intensity | Sharpness | Duration | Use Case                  |
+// |----------------|-----------|-----------|----------|---------------------------|
+// | arrowTap()     | 0.6       | 0.8       | 80 ms    | Successful arrow tap      |
+// | wrongTap()     | 0.9       | 0.3       | 150 ms   | Invalid tap (dull thud)   |
+// | levelComplete()| escalating triple pulse         | Win celebration           |
+// | levelFailed()  | 1.0       | 0.1       | 400 ms   | Long dull rumble          |
+// | buttonTap()    | UIImpactFeedbackGenerator light  | UI navigation             |
+// | starEarned()   | 0.75      | 1.0       | 100 ms   | Per-star animation (F.12) |
+//
+// ## Degradation
+//
+// Falls back to `UIImpactFeedbackGenerator` if `CHHapticEngine` is unavailable
+// (e.g., iPad or older iPhone without Core Haptics support).
 
 import CoreHaptics
 import UIKit
@@ -67,6 +84,12 @@ final class HapticManager {
     func buttonTap() {
         guard isEnabled else { return }
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
+    }
+
+    // Feature 12 – per-star earned pulse
+    func starEarned() {
+        guard isEnabled else { return }
+        play(intensity: 0.75, sharpness: 1.0, duration: 0.1)
     }
 
     // MARK: - Private Helpers

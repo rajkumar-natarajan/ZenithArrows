@@ -151,12 +151,22 @@ struct LevelCell: View {
                 }
             }
 
-            // Difficulty dot
-            Circle()
-                .fill(difficultyColor)
-                .frame(width: 5, height: 5)
+            // Feature 14 – Grid size indicator
+            Text("\(level.gridRows)×\(level.gridCols)")
+                .font(.system(size: 8, weight: .semibold, design: .rounded))
+                .foregroundStyle(theme.current.textColor.opacity(0.45))
+
+            // Difficulty dot with label on hover / always visible
+            HStack(spacing: 2) {
+                Circle()
+                    .fill(difficultyColor)
+                    .frame(width: 5, height: 5)
+                Text(difficultyAbbrev)
+                    .font(.system(size: 7, weight: .semibold, design: .rounded))
+                    .foregroundStyle(difficultyColor.opacity(0.8))
+            }
         }
-        .frame(width: 72, height: 72)
+        .frame(width: 72, height: 80)
         .background(
             level.bestStars == 3
                 ? Color.yellow.opacity(0.12)
@@ -178,6 +188,17 @@ struct LevelCell: View {
         case .hard:     return .orange
         case .expert:   return .red
         case .zen:      return .purple
+        }
+    }
+
+    private var difficultyAbbrev: String {
+        switch level.difficulty {
+        case .tutorial: return "TUT"
+        case .easy:     return "EZ"
+        case .medium:   return "MED"
+        case .hard:     return "HARD"
+        case .expert:   return "EXP"
+        case .zen:      return "ZEN"
         }
     }
 }

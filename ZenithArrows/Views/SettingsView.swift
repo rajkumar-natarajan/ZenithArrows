@@ -1,5 +1,7 @@
 // SettingsView.swift
 // ZenithArrows
+// Updated: Feature 18 (colorblind mode), Feature 20 (notification settings),
+//          Feature 13 (locked theme display).
 
 import SwiftUI
 
@@ -7,7 +9,10 @@ struct SettingsView: View {
 
     @StateObject private var audio    = AudioManager.shared
     @StateObject private var theme    = ThemeManager.shared
+    @StateObject private var colorblind = ColorblindManager.shared
     @Environment(\.dismiss) private var dismiss
+    @State private var notificationsEnabled = false
+    @State private var showNotificationAlert = false
 
     var body: some View {
         NavigationStack {
@@ -22,20 +27,70 @@ struct SettingsView: View {
                     }
                     .listRowBackground(theme.current.buttonBackground)
 
-                    // MARK: Appearance
+                    // MARK: Accessibility – Feature 18
+                    Section("Accessibility") {
+                        Toggle("Colorblind Mode", isOn: $colorblind.isEnabled)
+                        if colorblind.isEnabled {
+                            Picker("Overlay Style", selection: $colorblind.mode) {
+                                ForEach(ColorblindManager.ColorblindMode.allCases, id: \.self) { m in
+                                    Text(m.rawValue.capitalized).tag(m)
+                                }
+                            }
+                            .pickerStyle(.segmented)
+                        }
+                    }
+                    .listRowBackground(theme.current.buttonBackground)
+
+                    // MARK: Notifications – Feature 20
+                    Section("Notifications") {
+                        Toggle("Daily Challenge Reminder", isOn: $notificationsEnabled)
+                            .onChange(of: notificationsEnabled) { _, enabled in
+                                if enabled {
+                                    Task {
+                                        let granted = await NotificationManager.shared.requestAuthorization()
+                                        if !granted {
+                                            notificationsEnabled = false
+                                            showNotificationAlert = true
+                                        }
+                                    }
+                                } else {
+                                    NotificationManager.shared.cancelAll()
+                                }
+                            }
+                    }
+                    .listRowBackground(theme.current.buttonBackground)
+
+                    // MARK: Appearance – Feature 13 theme locking
                     Section("Theme") {
-                        ForEach(theme.availableThemes, id: \.key) { t in
+                        ForEach(theme.displayThemes, id: \.theme.key) { item in
                             HStack {
-                                Text(t.name)
-                                    .foregroundStyle(theme.current.textColor)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(item.theme.name)
+                                        .foregroundStyle(item.isUnlocked
+                                                          ? theme.current.textColor
+                                                          : Color.gray)
+                                    if !item.isUnlocked, let req = item.requiredStars {
+                                        Text("Unlock at \(req) ⭐ or streak reward")
+                                            .font(.system(size: 10))
+                                            .foregroundStyle(Color.gray.opacity(0.7))
+                                    }
+                                }
                                 Spacer()
-                                if t.key == theme.current.key {
+                                if !item.isUnlocked {
+                                    Image(systemName: "lock.fill")
+                                        .foregroundStyle(Color.gray.opacity(0.5))
+                                        .font(.system(size: 13))
+                                } else if item.theme.key == theme.current.key {
                                     Image(systemName: "checkmark")
                                         .foregroundStyle(theme.current.accentColor)
                                 }
                             }
                             .contentShape(Rectangle())
-                            .onTapGesture { theme.select(themeKey: t.key) }
+                            .onTapGesture {
+                                guard item.isUnlocked else { return }
+                                theme.select(themeKey: item.theme.key)
+                            }
+                            .opacity(item.isUnlocked ? 1.0 : 0.6)
                         }
                     }
                     .listRowBackground(theme.current.buttonBackground)
@@ -65,6 +120,19 @@ struct SettingsView: View {
                     Button("Done") { dismiss() }
                         .foregroundStyle(theme.current.accentColor)
                 }
+            }
+            .alert("Notifications Disabled", isPresented: $showNotificationAlert) {
+                Button("Open Settings") {
+                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                        UIApplication.shared.open(url)
+                    }
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("Enable notifications in iOS Settings to receive daily challenge reminders.")
+            }
+            .task {
+                notificationsEnabled = await NotificationManager.shared.isAuthorized
             }
         }
     }

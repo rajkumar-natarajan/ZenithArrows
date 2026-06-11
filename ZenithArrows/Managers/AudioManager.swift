@@ -1,6 +1,33 @@
 // AudioManager.swift
 // ZenithArrows
+//
 // Manages background music and sound effects via AVFoundation.
+//
+// ## Music
+//
+// - Loops `music_ambient.mp3` at volume 0.35.
+// - `fadeOutMusic(duration:)` — smooth fade for level-complete transitions.
+// - Music toggle persisted via `zenith_music` UserDefaults key.
+//
+// ## SFX Events
+//
+// | Event       | Trigger                           |
+// |-------------|-----------------------------------|
+// | slide       | Successful arrow tap              |
+// | wrongTap    | Invalid tap                       |
+// | success     | Level complete                    |
+// | failure     | Level failed                      |
+// | buttonTap   | Any UI button press               |
+// | hint        | Hint or free hint used            |
+// | star        | Each star earned in EndLevelView  |
+//
+// All SFX are pre-loaded at init; missing assets fall back to
+// `AudioServicesPlaySystemSound`.
+//
+// ## Session Category
+//
+// `.ambient` with `.mixWithOthers` so background music (e.g. Spotify)
+// continues playing beneath game audio.
 
 import AVFoundation
 import Combine

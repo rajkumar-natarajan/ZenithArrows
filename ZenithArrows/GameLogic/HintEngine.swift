@@ -1,6 +1,38 @@
 // HintEngine.swift
 // ZenithArrows
-// Computes the optimal next move using reverse-simulation (topological sort).
+//
+// Computes the optimal next move using iterative topological sort.
+//
+// ## Algorithm
+//
+// The solver uses a Kahn's-style approach over the dependency graph:
+//   1. Find all currently-moveable arrows (no blocking arrows in their path).
+//   2. Remove them from the simulation grid (mark as removed).
+//   3. Repeat until the grid is empty (solvable) or no progress (deadlock).
+//
+// Worst case O(n²) where n = arrow count; typical levels are small (n ≤ 20).
+//
+// ## API
+//
+// - `nextSafeMove(in:) → UUID?`
+//   Returns the UUID of the first arrow in `solveOrder`, or any moveable
+//   arrow if a full solve order cannot be computed.
+//
+// - `solveOrder(arrows:grid:) → [UUID]?`
+//   Full valid removal sequence, or nil if the level is unsolvable (deadlock).
+//
+// - `isSolvable(grid:) → Bool`
+//   Quick check — equivalent to `solveOrder != nil` but avoids the copy
+//   overhead of returning the full sequence.
+//
+// ## Usage
+//
+// ```swift
+// let hint = HintEngine()
+// if let id = hint.nextSafeMove(in: gameState.grid) {
+//     gameState.highlightedArrowID = id
+// }
+// ```
 
 import Foundation
 

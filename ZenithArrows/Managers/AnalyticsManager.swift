@@ -10,8 +10,14 @@ enum AnalyticsEvent {
     case levelCompleted(levelID: String, stars: Int, moves: Int, time: TimeInterval)
     case levelFailed(levelID: String, moves: Int)
     case hintUsed(levelID: String)
+    case freeHintUsed(levelID: String)     // Feature 17
     case themeChanged(to: String)
     case iapInitiated(productID: String)
+    case timedChallengeCompleted(levelID: String, score: Int)   // Feature 1
+    case weeklyChallengeStarted(weekID: String)                 // Feature 6
+    case challengeShared(levelID: String)                       // Feature 7
+    case comboAchieved(streak: Int)                             // Feature 2
+    case achievementUnlocked(achievementID: String)             // Feature 10
 }
 
 final class AnalyticsManager {
@@ -26,27 +32,30 @@ final class AnalyticsManager {
         var dict: [String: Any] = ["ts": ISO8601DateFormatter().string(from: Date())]
         switch event {
         case .levelStarted(let id):
-            dict["event"] = "level_started"
-            dict["level_id"] = id
+            dict["event"] = "level_started"; dict["level_id"] = id
         case .levelCompleted(let id, let stars, let moves, let time):
-            dict["event"] = "level_completed"
-            dict["level_id"] = id
-            dict["stars"] = stars
-            dict["moves"] = moves
-            dict["time"] = time
+            dict["event"] = "level_completed"; dict["level_id"] = id
+            dict["stars"] = stars; dict["moves"] = moves; dict["time"] = time
         case .levelFailed(let id, let moves):
-            dict["event"] = "level_failed"
-            dict["level_id"] = id
-            dict["moves"] = moves
+            dict["event"] = "level_failed"; dict["level_id"] = id; dict["moves"] = moves
         case .hintUsed(let id):
-            dict["event"] = "hint_used"
-            dict["level_id"] = id
+            dict["event"] = "hint_used"; dict["level_id"] = id
+        case .freeHintUsed(let id):
+            dict["event"] = "free_hint_used"; dict["level_id"] = id
         case .themeChanged(let theme):
-            dict["event"] = "theme_changed"
-            dict["theme"] = theme
+            dict["event"] = "theme_changed"; dict["theme"] = theme
         case .iapInitiated(let pid):
-            dict["event"] = "iap_initiated"
-            dict["product_id"] = pid
+            dict["event"] = "iap_initiated"; dict["product_id"] = pid
+        case .timedChallengeCompleted(let id, let score):
+            dict["event"] = "timed_challenge_completed"; dict["level_id"] = id; dict["score"] = score
+        case .weeklyChallengeStarted(let weekID):
+            dict["event"] = "weekly_challenge_started"; dict["week_id"] = weekID
+        case .challengeShared(let id):
+            dict["event"] = "challenge_shared"; dict["level_id"] = id
+        case .comboAchieved(let streak):
+            dict["event"] = "combo_achieved"; dict["streak"] = streak
+        case .achievementUnlocked(let achievementID):
+            dict["event"] = "achievement_unlocked"; dict["achievement_id"] = achievementID
         }
         buffer.append(dict)
         if buffer.count >= 50 { flush() }

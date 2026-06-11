@@ -1,6 +1,8 @@
 // HomeView.swift
 // ZenithArrows
-// Root home screen: Play, Daily Challenge, Chapters, Shop, Settings.
+// Root home screen: Play, Daily Challenge, Weekly Challenge, Chapters, Shop, Settings.
+// Updated: Feature 6 (weekly challenges), Feature 9 (streak reward popup),
+//          Feature 10 (achievements), Feature 20 (notifications).
 
 import SwiftUI
 
@@ -9,10 +11,14 @@ struct HomeView: View {
     @StateObject private var levelManager  = LevelManager.shared
     @StateObject private var themeManager  = ThemeManager.shared
     @StateObject private var progressMgr   = ProgressManager.shared
+    @StateObject private var streakRewards = StreakRewardManager.shared
+    @StateObject private var achievements  = AchievementManager.shared
 
     @State private var navigation: NavigationPath = NavigationPath()
     @State private var showSettings = false
     @State private var showShop = false
+    @State private var showWeekly = false
+    @State private var showAchievements = false
     @State private var logoRotation: Double = 0
     @State private var appeared = false
 
@@ -46,6 +52,23 @@ struct HomeView: View {
                 }
                 .opacity(appeared ? 1 : 0)
                 .offset(y: appeared ? 0 : 20)
+
+                // Feature 9 – Streak reward popup
+                if let reward = streakRewards.pendingReward {
+                    StreakRewardView(milestone: reward) {
+                        streakRewards.dismissPendingReward()
+                    }
+                    .transition(.opacity)
+                    .zIndex(10)
+                }
+
+                // Feature 10 – Achievement unlock toast
+                if let newAch = achievements.newlyUnlocked {
+                    AchievementToast(achievement: newAch) {
+                        achievements.dismissNewUnlock()
+                    }
+                    .zIndex(9)
+                }
             }
             .navigationDestination(for: Route.self) { route in
                 switch route {
@@ -64,13 +87,19 @@ struct HomeView: View {
         }
         .sheet(isPresented: $showSettings) { SettingsView() }
         .sheet(isPresented: $showShop) { ShopView() }
+        .sheet(isPresented: $showWeekly) { WeeklyChallengeView() }
+        .sheet(isPresented: $showAchievements) { AchievementsView() }
         .onAppear {
             progressMgr.authenticateGameCenter()
             withAnimation(.easeOut(duration: 0.5)) { appeared = true }
-            // Continuous slow logo rotation
             withAnimation(.linear(duration: 8).repeatForever(autoreverses: false)) {
                 logoRotation = 360
             }
+            // Feature 9 – check streak rewards on each app open
+            progressMgr.checkStreakRewards()
+            // Feature 20 – request notifications on first launch
+            Task { await NotificationManager.shared.requestAuthorization() }
+            NotificationManager.shared.clearBadge()
         }
     }
 
@@ -87,9 +116,22 @@ struct HomeView: View {
                     .background(Color.orange.opacity(0.15), in: Capsule())
             }
             Spacer()
+            // Feature 10 – achievements quick-access
+            Button {
+                showAchievements = true
+            } label: {
+                Label("\(achievements.unlockedCount)/\(achievements.totalCount)", systemImage: "trophy.fill")
+                    .font(.system(size: 11, weight: .semibold, design: .rounded))
+                    .foregroundStyle(.yellow)
+                    .padding(.horizontal, 9)
+                    .padding(.vertical, 5)
+                    .background(Color.yellow.opacity(0.12), in: Capsule())
+            }
+            .buttonStyle(.plain)
             Label("\(progressMgr.totalStars)", systemImage: "star.fill")
                 .font(.system(size: 14, weight: .bold, design: .rounded))
                 .foregroundStyle(.yellow)
+                .padding(.leading, 8)
         }
         .padding(.horizontal, 20)
         .padding(.top, 16)
@@ -97,7 +139,6 @@ struct HomeView: View {
 
     private var logoArea: some View {
         VStack(spacing: 8) {
-            // Rotating arrow emblem
             ZStack {
                 Circle()
                     .fill(themeManager.current.accentColor.opacity(0.12))
@@ -146,6 +187,19 @@ struct HomeView: View {
                     HapticManager.shared.buttonTap()
                     navigation.append(Route.game(daily))
                 }
+            }
+
+            // Feature 6 – Weekly Challenge
+            MainMenuButton(
+                title: "Weekly Challenge",
+                subtitle: WeeklyChallengeManager.shared.timeRemainingFormatted.isEmpty
+                    ? "New hard puzzle every Monday"
+                    : "Resets in \(WeeklyChallengeManager.shared.timeRemainingFormatted)",
+                systemImage: "calendar.badge.clock",
+                accentColor: .purple
+            ) {
+                HapticManager.shared.buttonTap()
+                showWeekly = true
             }
 
             // Chapters

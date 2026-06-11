@@ -1,6 +1,34 @@
 // GridModel.swift
 // ZenithArrows
-// Represents the live game grid and all spatial operations.
+//
+// Represents the live game grid and all spatial query / mutation operations.
+//
+// ## Storage
+//
+// - `cells: [[CellContent]]` — row-major 2D array for O(1) position lookup.
+// - `arrowPositions: [UUID: GridPosition]` — reverse map for O(1) arrow lookup
+//   by ID (used by undo stack, hint engine, combo engine).
+//
+// ## Key Operations
+//
+// - `place(arrow:)` / `place(obstacle:)` — add entity at its declared position.
+// - `remove(arrowID:)` — clear cell and remove from position map.
+// - `slidePath(for:) → SlidePath?` — compute traversal path for an arrow;
+//   returns nil if immediately blocked.  Handles portals and trap tiles.
+// - `copy() → GridModel` — deep copy for undo snapshot (O(rows×cols)).
+//
+// ## CellContent Enum
+//
+// `.empty` | `.arrow(Arrow)` | `.obstacle` | `.portal(id:color:)` |
+// `.ice` | `.trap`
+//
+// ## SlidePath
+//
+// Returned by `slidePath(for:)`; contains:
+// - `cells` — intermediate traversed positions
+// - `exitsBoardAt` — first out-of-bounds position (arrow disappears here)
+// - `portalExit` — re-entry position after teleport
+// - `trapEncountered` — direction reversal flag
 
 import Foundation
 

@@ -1,6 +1,7 @@
 // EndLevelView.swift
 // ZenithArrows
 // Post-level celebration screen with star rating and options.
+// Updated: Feature 12 (per-star haptic/sound), Feature 5 (replay solution).
 
 import SwiftUI
 
@@ -11,6 +12,11 @@ struct EndLevelView: View {
     let time: TimeInterval
     let levelTitle: String
 
+    // Feature 5 – replay support
+    var replayEngine: ReplayEngine? = nil
+    var hintEngine: HintEngine? = nil
+    var grid: GridModel? = nil
+
     var onNextLevel: () -> Void
     var onReplay: () -> Void
     var onMenu: () -> Void
@@ -19,6 +25,7 @@ struct EndLevelView: View {
     @State private var animatedStars: Int = 0
     @State private var showContent = false
     @State private var headerScale: CGFloat = 0.6
+    @State private var showSolutionReplay = false  // Feature 5
 
     var body: some View {
         ZStack {
@@ -27,7 +34,7 @@ struct EndLevelView: View {
             VStack(spacing: 0) {
                 Spacer()
 
-                // Stars
+                // Feature 12 – Stars animate one-by-one, each with sound + haptic
                 HStack(spacing: 20) {
                     ForEach(0..<3, id: \.self) { i in
                         ZStack {
@@ -101,12 +108,26 @@ struct EndLevelView: View {
                                          isPrimary: false,
                                          action: onMenu)
                         }
+                        // Feature 5 – Watch Solution Replay
+                        if replayEngine != nil {
+                            Button {
+                                showSolutionReplay = true
+                                if let e = replayEngine, let h = hintEngine, let g = grid {
+                                    e.startOptimalReplay(grid: g, hintEngine: h)
+                                }
+                            } label: {
+                                Label("Watch Solution", systemImage: "play.circle")
+                                    .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                    .foregroundStyle(theme.current.accentColor)
+                            }
+                            .padding(.top, 2)
+                        }
                         ShareLink(item: shareText) {
                             Label("Share", systemImage: "square.and.arrow.up")
                                 .font(.system(size: 13, weight: .semibold, design: .rounded))
                                 .foregroundStyle(theme.current.accentColor)
                         }
-                        .padding(.top, 4)
+                        .padding(.top, 2)
                     }
                     .padding(.horizontal, 28)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
@@ -116,10 +137,14 @@ struct EndLevelView: View {
             }
         }
         .onAppear {
-            // Staggered star reveal
+            // Feature 12 – Staggered star reveal with per-star haptic + sound
             for i in 1...3 {
-                DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.25) {
-                    if i <= stars { animatedStars = i }
+                DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.28) {
+                    if i <= stars {
+                        animatedStars = i
+                        AudioManager.shared.play(.star)
+                        HapticManager.shared.starEarned()
+                    }
                 }
             }
             withAnimation(.easeOut.delay(0.8)) {

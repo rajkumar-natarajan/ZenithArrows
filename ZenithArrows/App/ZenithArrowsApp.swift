@@ -1,6 +1,16 @@
 // ZenithArrowsApp.swift
 // ZenithArrows
-// App entry point.
+//
+// App entry point and delegate.
+//
+// Responsibilities:
+//  - Declares `@main` SwiftUI App struct.
+//  - Forces dark-mode presentation for consistent theme rendering.
+//  - `AppDelegate` pre-warms heavyweight singletons (`LevelManager`,
+//    `ProgressManager`) on a background task so the first `HomeView` frame
+//    does not block the main thread.
+//  - On `applicationDidBecomeActive`: restarts ambient background music if
+//    the user had music enabled before backgrounding.
 
 import SwiftUI
 

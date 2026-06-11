@@ -1,6 +1,30 @@
 // ThemeManager.swift
 // ZenithArrows
-// Defines visual themes and vends the active theme to all layers.
+//
+// Defines visual themes and vends the active theme to all rendering layers.
+//
+// ## Themes
+//
+// | Key      | Name         | Unlock Condition          |
+// |----------|--------------|---------------------------|
+// | zen      | Zen Stone    | Always free (default)     |
+// | neon     | Neon City    | 100 stars OR 14-day streak|
+// | cyber    | Cyber        | 300 stars OR 30-day streak|
+// | nature   | Nature       | 50 stars                  |
+// | dark     | Pure Dark    | 100-day streak only       |
+//
+// ## Feature 13 — Theme Unlocking
+//
+// `unlockTheme(key:)` — grants access and persists via `zenith_unlocked_themes_v1`.
+// `checkStarUnlocks(totalStars:)` — called after level completion to auto-unlock
+//   star-gated themes.
+// `select(themeKey:)` — no-ops if the key is not in `unlockedThemeKeys`.
+// `displayThemes` — returns `(theme, isUnlocked, requiredStars?)` for Settings UI.
+//
+// ## `GameTheme` Struct
+//
+// Contains SpriteKit (`SKColor`) and SwiftUI (`Color`, `LinearGradient`) colour
+// definitions for every UI element so both layers always stay in sync.
 
 import SwiftUI
 import SpriteKit
@@ -45,20 +69,80 @@ final class ThemeManager: ObservableObject {
 
     @Published private(set) var current: GameTheme
     @Published private(set) var availableThemes: [GameTheme]
+    @Published private(set) var unlockedThemeKeys: Set<String>
 
-    private let defaultKey = "zenith_theme_v1"
+    private let defaultKey   = "zenith_theme_v1"
+    private let unlockedKey  = "zenith_unlocked_themes_v1"
+
+    // Themes that require a star milestone to unlock (Feature 13)
+    static let lockedThemeKeys: [String: Int] = [
+        "neon":   14,   // unlock via 14-day streak reward
+        "cyber":  30,   // unlock via 30-day streak reward
+        "dark":   100,  // unlock via 100-day streak reward
+        "nature": 50    // unlock by earning 50 total stars
+    ]
+    // "zen" is always free
 
     private init() {
         let all = ThemeManager.buildThemes()
         availableThemes = all
+
+        // Load persisted unlocked set (zen is always unlocked)
+        var savedUnlocked: Set<String>
+        if let data = UserDefaults.standard.data(forKey: "zenith_unlocked_themes_v1"),
+           let keys = try? JSONDecoder().decode([String].self, from: data) {
+            savedUnlocked = Set(keys)
+        } else {
+            savedUnlocked = ["zen"]
+        }
+        savedUnlocked.insert("zen")
+        unlockedThemeKeys = savedUnlocked
+
         let savedKey = UserDefaults.standard.string(forKey: "zenith_theme_v1") ?? "zen"
-        current = all.first { $0.key == savedKey } ?? all[0]
+        // Fall back to "zen" if saved theme is not yet unlocked
+        let resolvedKey = savedUnlocked.contains(savedKey) ? savedKey : "zen"
+        current = all.first { $0.key == resolvedKey } ?? all[0]
     }
 
     func select(themeKey: String) {
-        guard let theme = availableThemes.first(where: { $0.key == themeKey }) else { return }
+        guard let theme = availableThemes.first(where: { $0.key == themeKey }),
+              isUnlocked(themeKey: themeKey) else { return }
         current = theme
         UserDefaults.standard.set(themeKey, forKey: defaultKey)
+    }
+
+    // Feature 13 – unlock a theme programmatically (called by StreakRewardManager)
+    func unlockTheme(key: String) {
+        unlockedThemeKeys.insert(key)
+        persistUnlocked()
+    }
+
+    // Feature 13 – unlock themes via star count
+    func checkStarUnlocks(totalStars: Int) {
+        if totalStars >= 50 { unlockTheme(key: "nature") }
+        if totalStars >= 100 { unlockTheme(key: "neon") }
+        if totalStars >= 300 { unlockTheme(key: "cyber") }
+    }
+
+    func isUnlocked(themeKey: String) -> Bool {
+        unlockedThemeKeys.contains(themeKey)
+    }
+
+    var lockedThemes: [GameTheme] {
+        availableThemes.filter { !isUnlocked(themeKey: $0.key) }
+    }
+
+    var displayThemes: [(theme: GameTheme, isUnlocked: Bool, requiredStars: Int?)] {
+        availableThemes.map { t in
+            (t, isUnlocked(themeKey: t.key), ThemeManager.lockedThemeKeys[t.key])
+        }
+    }
+
+    private func persistUnlocked() {
+        let keys = Array(unlockedThemeKeys)
+        if let data = try? JSONEncoder().encode(keys) {
+            UserDefaults.standard.set(data, forKey: unlockedKey)
+        }
     }
 
     // MARK: - Theme Definitions

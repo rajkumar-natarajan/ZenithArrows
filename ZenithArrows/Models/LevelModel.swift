@@ -1,6 +1,28 @@
 // LevelModel.swift
 // ZenithArrows
-// Defines a level's static data (layout, metadata, obstacles).
+//
+// Defines the static (level file) data structures used across the app.
+//
+// ## Types
+//
+// - `World`: Chapter container with unlock requirements and ordered level list.
+// - `LevelDifficulty`: tutorial | easy | medium | hard | expert | zen
+// - `LevelDefinition`: Full level descriptor, JSON-decodable from `Levels/*.json`.
+//   Includes grid dimensions, arrow/obstacle placements, par values, diagonal flag.
+//   `starRating(moves:time:mistakes:)` encodes the 3/2/1-star thresholds.
+// - `ArrowPlacement`: Lightweight row/col/direction/type/color tuple for JSON.
+// - `ObstaclePlacement`: row/col/kind(wall|portal|ice|trap) + optional portalID/color.
+//
+// ## JSON Format
+//
+// ```json
+// { "id": "w1_l001", "worldID": 1, "gridRows": 4, "gridCols": 4,
+//   "difficulty": "tutorial", "parMoves": 5, "parTime": 120,
+//   "diagonalsEnabled": false, "arrows": [...], "obstacles": [...] }
+// ```
+//
+// Optional fields (`type`, `color` on arrows; `title`) default gracefully
+// via `decodeIfPresent` so older level files remain valid.
 
 import Foundation
 
