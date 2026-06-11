@@ -1,104 +1,137 @@
 {
   "id": 4,
-  "name": "Zenith",
-  "themeKey": "dark",
-  "description": "Master-tier 9×9 and 10×10 puzzles — the pinnacle of ZenithArrows",
-  "requiredStarsToUnlock": 80,
+  "name": "Portals",
+  "themeKey": "nature",
+  "description": "Teleport arrows through portal pairs to escape",
+  "requiredStarsToUnlock": 70,
   "isUnlocked": false,
   "levels": [
     {
-      "id": "w4_l001",
-      "worldID": 4,
-      "index": 1,
-      "gridRows": 9,
-      "gridCols": 9,
+      "id": "w4_l001", "worldID": 4, "index": 1,
+      "gridRows": 5, "gridCols": 5,
       "arrows": [
-        {"row": 0, "col": 0, "direction": "right"},
-        {"row": 0, "col": 2, "direction": "down"},
-        {"row": 0, "col": 4, "direction": "right"},
-        {"row": 0, "col": 6, "direction": "down"},
-        {"row": 0, "col": 8, "direction": "down"},
-        {"row": 2, "col": 8, "direction": "left"},
-        {"row": 2, "col": 6, "direction": "down"},
-        {"row": 4, "col": 6, "direction": "left"},
-        {"row": 4, "col": 4, "direction": "down"},
-        {"row": 6, "col": 4, "direction": "left"},
-        {"row": 6, "col": 2, "direction": "down"},
-        {"row": 8, "col": 2, "direction": "left"},
-        {"row": 8, "col": 0, "direction": "up"},
-        {"row": 6, "col": 0, "direction": "right"},
-        {"row": 4, "col": 0, "direction": "up"},
-        {"row": 2, "col": 0, "direction": "right"},
-        {"row": 2, "col": 2, "direction": "up"},
-        {"row": 4, "col": 2, "direction": "right"},
-        {"row": 4, "col": 3, "direction": "down"},
-        {"row": 6, "col": 3, "direction": "right"},
-        {"row": 6, "col": 6, "direction": "down"},
-        {"row": 8, "col": 6, "direction": "right"},
-        {"row": 8, "col": 8, "direction": "up"}
+        {"row": 2, "col": 0, "direction": "left"},
+        {"row": 4, "col": 2, "direction": "up"},
+        {"row": 3, "col": 3, "direction": "up"},
+        {"row": 0, "col": 1, "direction": "right"}
       ],
       "obstacles": [
-        {"row": 3, "col": 3, "kind": "wall"},
-        {"row": 5, "col": 5, "kind": "wall"},
-        {"row": 3, "col": 7, "kind": "ice"},
-        {"row": 7, "col": 3, "kind": "ice"},
-        {"row": 4, "col": 8, "kind": "portal", "portalID": 1, "portalColor": "blue"},
-        {"row": 8, "col": 4, "kind": "portal", "portalID": 1, "portalColor": "blue"}
+        {"row": 4, "col": 0, "portalID": 1, "kind": "portal", "portalColor": "blue"},
+        {"portalColor": "blue", "col": 4, "row": 3, "kind": "portal", "portalID": 1}
       ],
-      "difficulty": "expert",
-      "parMoves": 23,
-      "parTime": 240,
-      "diagonalsEnabled": false,
-      "title": "The Serpent"
+      "difficulty": "easy", "parMoves": 4, "parTime": 65,
+      "diagonalsEnabled": false, "title": "Portal Intro"
     },
     {
-      "id": "w4_l002",
-      "worldID": 4,
-      "index": 2,
-      "gridRows": 10,
-      "gridCols": 10,
+      "id": "w4_l002", "worldID": 4, "index": 2,
+      "gridRows": 5, "gridCols": 5,
       "arrows": [
-        {"row": 0, "col": 0, "direction": "right"},
-        {"row": 0, "col": 2, "direction": "right"},
-        {"row": 0, "col": 4, "direction": "right"},
-        {"row": 0, "col": 6, "direction": "right"},
-        {"row": 0, "col": 8, "direction": "down"},
-        {"row": 2, "col": 9, "direction": "down"},
-        {"row": 4, "col": 9, "direction": "down"},
-        {"row": 6, "col": 9, "direction": "down"},
-        {"row": 8, "col": 9, "direction": "left"},
-        {"row": 9, "col": 8, "direction": "left"},
-        {"row": 9, "col": 6, "direction": "left"},
-        {"row": 9, "col": 4, "direction": "left"},
-        {"row": 9, "col": 2, "direction": "left"},
-        {"row": 9, "col": 0, "direction": "up"},
-        {"row": 8, "col": 0, "direction": "up"},
-        {"row": 6, "col": 0, "direction": "up"},
-        {"row": 4, "col": 0, "direction": "up"},
-        {"row": 2, "col": 0, "direction": "right"},
-        {"row": 3, "col": 3, "direction": "right"},
-        {"row": 3, "col": 6, "direction": "down"},
-        {"row": 6, "col": 6, "direction": "left"},
-        {"row": 6, "col": 3, "direction": "up"},
+        {"row": 1, "col": 4, "direction": "left"},
+        {"row": 4, "col": 1, "direction": "down"},
+        {"row": 3, "col": 2, "direction": "left"},
+        {"row": 3, "col": 0, "direction": "left"},
         {"row": 4, "col": 4, "direction": "right"},
-        {"row": 4, "col": 6, "direction": "down"},
-        {"row": 7, "col": 4, "direction": "left"},
-        {"row": 5, "col": 5, "direction": "up"}
+        {"row": 2, "col": 3, "direction": "up"}
       ],
       "obstacles": [
-        {"row": 1, "col": 1, "kind": "wall"},
-        {"row": 1, "col": 5, "kind": "wall"},
-        {"row": 5, "col": 1, "kind": "wall"},
-        {"row": 5, "col": 8, "kind": "ice"},
-        {"row": 8, "col": 5, "kind": "ice"},
-        {"row": 2, "col": 7, "kind": "portal", "portalID": 2, "portalColor": "green"},
-        {"row": 7, "col": 2, "kind": "portal", "portalID": 2, "portalColor": "green"}
+        {"row": 0, "col": 4, "portalID": 1, "kind": "portal", "portalColor": "red"},
+        {"portalColor": "red", "col": 0, "row": 4, "kind": "portal", "portalID": 1},
+        {"portalColor": "blue", "portalID": 2, "kind": "portal", "row": 2, "col": 4},
+        {"row": 2, "portalColor": "blue", "col": 4, "portalID": 2, "kind": "portal"}
       ],
-      "difficulty": "expert",
-      "parMoves": 26,
-      "parTime": 300,
-      "diagonalsEnabled": false,
-      "title": "Grand Zenith"
+      "difficulty": "medium", "parMoves": 6, "parTime": 80,
+      "diagonalsEnabled": false, "title": "Twin Portals"
+    },
+    {
+      "id": "w4_l003", "worldID": 4, "index": 3,
+      "gridRows": 5, "gridCols": 5,
+      "arrows": [
+        {"row": 2, "col": 3, "direction": "right"},
+        {"row": 3, "col": 2, "direction": "up"},
+        {"row": 1, "col": 2, "direction": "up"},
+        {"row": 1, "col": 0, "direction": "up"},
+        {"row": 4, "col": 4, "direction": "down"},
+        {"row": 3, "col": 3, "direction": "down"},
+        {"row": 0, "col": 2, "direction": "left"}
+      ],
+      "obstacles": [
+        {"row": 4, "col": 0, "portalID": 1, "kind": "portal", "portalColor": "green"},
+        {"row": 0, "portalColor": "green", "col": 4, "portalID": 1, "kind": "portal"},
+        {"portalColor": "orange", "portalID": 3, "kind": "portal", "row": 4, "col": 2},
+        {"portalColor": "orange", "col": 1, "row": 4, "kind": "portal", "portalID": 3}
+      ],
+      "difficulty": "medium", "parMoves": 7, "parTime": 90,
+      "diagonalsEnabled": false, "title": "Shortcut"
+    },
+    {
+      "id": "w4_l004", "worldID": 4, "index": 4,
+      "gridRows": 6, "gridCols": 6,
+      "arrows": [
+        {"row": 4, "col": 2, "direction": "right"},
+        {"row": 4, "col": 5, "direction": "down"},
+        {"row": 3, "col": 2, "direction": "right"},
+        {"row": 4, "col": 3, "direction": "down"},
+        {"row": 0, "col": 1, "direction": "right"},
+        {"row": 2, "col": 2, "direction": "up"},
+        {"row": 1, "col": 2, "direction": "left"},
+        {"row": 0, "col": 5, "direction": "right"}
+      ],
+      "obstacles": [
+        {"row": 5, "col": 0, "portalID": 1, "kind": "portal", "portalColor": "purple"},
+        {"portalColor": "purple", "col": 0, "row": 3, "kind": "portal", "portalID": 1}
+      ],
+      "difficulty": "hard", "parMoves": 8, "parTime": 105,
+      "diagonalsEnabled": false, "title": "Portal Jump"
+    },
+    {
+      "id": "w4_l005", "worldID": 4, "index": 5,
+      "gridRows": 6, "gridCols": 6,
+      "arrows": [
+        {"row": 1, "col": 2, "direction": "left"},
+        {"row": 5, "col": 3, "direction": "down"},
+        {"row": 0, "col": 5, "direction": "right"},
+        {"row": 1, "col": 4, "direction": "right"},
+        {"row": 2, "col": 5, "direction": "right"},
+        {"row": 2, "col": 4, "direction": "down"},
+        {"row": 3, "col": 1, "direction": "down"},
+        {"row": 5, "col": 5, "direction": "down"},
+        {"row": 2, "col": 0, "direction": "up"},
+        {"row": 1, "col": 1, "direction": "left"}
+      ],
+      "obstacles": [
+        {"row": 5, "col": 0, "portalID": 1, "kind": "portal", "portalColor": "orange"},
+        {"portalColor": "orange", "col": 3, "row": 0, "kind": "portal", "portalID": 1},
+        {"portalColor": "blue", "portalID": 3, "kind": "portal", "row": 5, "col": 2},
+        {"row": 4, "portalColor": "blue", "col": 2, "portalID": 3, "kind": "portal"}
+      ],
+      "difficulty": "hard", "parMoves": 10, "parTime": 120,
+      "diagonalsEnabled": false, "title": "Portal Maze"
+    },
+    {
+      "id": "w4_l006", "worldID": 4, "index": 6,
+      "gridRows": 6, "gridCols": 6,
+      "arrows": [
+        {"row": 5, "col": 4, "direction": "up"},
+        {"row": 1, "col": 0, "direction": "right"},
+        {"row": 2, "col": 0, "direction": "right"},
+        {"row": 3, "col": 2, "direction": "up"},
+        {"row": 1, "col": 2, "direction": "right"},
+        {"row": 1, "col": 4, "direction": "up"},
+        {"row": 0, "col": 4, "direction": "right"},
+        {"row": 2, "col": 4, "direction": "right"},
+        {"row": 0, "col": 2, "direction": "up"},
+        {"row": 3, "col": 3, "direction": "right"},
+        {"row": 1, "col": 3, "direction": "up"},
+        {"row": 5, "col": 3, "direction": "down"}
+      ],
+      "obstacles": [
+        {"row": 5, "col": 0, "portalID": 1, "kind": "portal", "portalColor": "red"},
+        {"row": 0, "portalColor": "red", "col": 1, "portalID": 1, "kind": "portal"},
+        {"portalColor": "green", "portalID": 3, "kind": "portal", "row": 5, "col": 2},
+        {"portalColor": "green", "col": 3, "row": 4, "kind": "portal", "portalID": 3}
+      ],
+      "difficulty": "expert", "parMoves": 12, "parTime": 140,
+      "diagonalsEnabled": false, "title": "Portal Network"
     }
   ]
 }

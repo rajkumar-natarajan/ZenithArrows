@@ -2,157 +2,244 @@
   "id": 2,
   "name": "Obstacles",
   "themeKey": "cyber",
-  "description": "Navigate around walls and special tiles on 5×5 and 6×6 grids",
+  "description": "Navigate around walls on 5x5 and 6x6 grids",
   "requiredStarsToUnlock": 15,
   "isUnlocked": false,
   "levels": [
     {
-      "id": "w2_l001",
-      "worldID": 2,
-      "index": 1,
-      "gridRows": 5,
-      "gridCols": 5,
+      "id": "w2_l001", "worldID": 2, "index": 1,
+      "gridRows": 5, "gridCols": 5,
       "arrows": [
-        {"row": 0, "col": 0, "direction": "right"},
-        {"row": 0, "col": 2, "direction": "down"},
-        {"row": 3, "col": 2, "direction": "right"},
-        {"row": 3, "col": 4, "direction": "up"},
-        {"row": 0, "col": 4, "direction": "down"},
-        {"row": 4, "col": 4, "direction": "left"},
-        {"row": 4, "col": 0, "direction": "up"},
-        {"row": 0, "col": 0, "direction": "down"}
+        {"row": 1, "col": 3, "direction": "right"},
+        {"row": 4, "col": 0, "direction": "left"},
+        {"row": 2, "col": 4, "direction": "up"},
+        {"row": 0, "col": 3, "direction": "right"},
+        {"row": 0, "col": 2, "direction": "up"},
+        {"row": 3, "col": 0, "direction": "right"}
       ],
       "obstacles": [
         {"row": 2, "col": 2, "kind": "wall"}
       ],
-      "difficulty": "easy",
-      "parMoves": 8,
-      "parTime": 80,
-      "diagonalsEnabled": false,
-      "title": "First Wall"
+      "difficulty": "easy", "parMoves": 6, "parTime": 70,
+      "diagonalsEnabled": false, "title": "First Wall"
     },
     {
-      "id": "w2_l002",
-      "worldID": 2,
-      "index": 2,
-      "gridRows": 5,
-      "gridCols": 5,
+      "id": "w2_l002", "worldID": 2, "index": 2,
+      "gridRows": 5, "gridCols": 5,
       "arrows": [
-        {"row": 0, "col": 0, "direction": "right"},
-        {"row": 0, "col": 4, "direction": "down"},
-        {"row": 4, "col": 4, "direction": "left"},
-        {"row": 4, "col": 0, "direction": "up"},
-        {"row": 1, "col": 1, "direction": "right"},
-        {"row": 1, "col": 3, "direction": "down"},
-        {"row": 3, "col": 3, "direction": "left"},
-        {"row": 3, "col": 1, "direction": "up"},
-        {"row": 2, "col": 0, "direction": "left"},
-        {"row": 2, "col": 4, "direction": "right"}
+        {"row": 0, "col": 2, "direction": "up"},
+        {"row": 4, "col": 0, "direction": "right"},
+        {"row": 0, "col": 1, "direction": "up"},
+        {"row": 2, "col": 3, "direction": "down"},
+        {"row": 1, "col": 0, "direction": "left"},
+        {"row": 0, "col": 3, "direction": "up"},
+        {"row": 0, "col": 0, "direction": "left"}
+      ],
+      "obstacles": [
+        {"row": 1, "col": 2, "kind": "wall"},
+        {"col": 2, "kind": "wall", "row": 3}
+      ],
+      "difficulty": "easy", "parMoves": 7, "parTime": 80,
+      "diagonalsEnabled": false, "title": "Two Walls"
+    },
+    {
+      "id": "w2_l003", "worldID": 2, "index": 3,
+      "gridRows": 5, "gridCols": 5,
+      "arrows": [
+        {"row": 0, "col": 0, "direction": "down"},
+        {"row": 3, "col": 3, "direction": "up"},
+        {"row": 3, "col": 4, "direction": "down"},
+        {"row": 1, "col": 2, "direction": "right"},
+        {"row": 4, "col": 3, "direction": "down"},
+        {"row": 1, "col": 4, "direction": "right"},
+        {"row": 4, "col": 4, "direction": "right"},
+        {"row": 0, "col": 4, "direction": "up"}
       ],
       "obstacles": [
         {"row": 0, "col": 2, "kind": "wall"},
-        {"row": 4, "col": 2, "kind": "wall"}
+        {"col": 4, "kind": "wall", "row": 2},
+        {"row": 4, "col": 1, "kind": "wall"}
       ],
-      "difficulty": "medium",
-      "parMoves": 10,
-      "parTime": 100,
-      "diagonalsEnabled": false,
-      "title": "Double Block"
+      "difficulty": "medium", "parMoves": 8, "parTime": 90,
+      "diagonalsEnabled": false, "title": "Trio"
     },
     {
-      "id": "w2_l003",
-      "worldID": 2,
-      "index": 3,
-      "gridRows": 6,
-      "gridCols": 6,
+      "id": "w2_l004", "worldID": 2, "index": 4,
+      "gridRows": 5, "gridCols": 5,
       "arrows": [
-        {"row": 0, "col": 0, "direction": "right"},
-        {"row": 0, "col": 2, "direction": "right"},
-        {"row": 0, "col": 4, "direction": "down"},
-        {"row": 2, "col": 4, "direction": "down"},
         {"row": 4, "col": 4, "direction": "left"},
-        {"row": 4, "col": 2, "direction": "left"},
-        {"row": 4, "col": 0, "direction": "up"},
-        {"row": 2, "col": 0, "direction": "up"},
-        {"row": 1, "col": 2, "direction": "right"},
-        {"row": 3, "col": 3, "direction": "left"},
-        {"row": 2, "col": 3, "direction": "down"},
-        {"row": 3, "col": 2, "direction": "up"}
+        {"row": 3, "col": 0, "direction": "left"},
+        {"row": 0, "col": 2, "direction": "left"},
+        {"row": 4, "col": 0, "direction": "down"},
+        {"row": 2, "col": 2, "direction": "left"},
+        {"row": 0, "col": 0, "direction": "left"},
+        {"row": 0, "col": 3, "direction": "right"},
+        {"row": 2, "col": 3, "direction": "right"},
+        {"row": 0, "col": 4, "direction": "right"}
+      ],
+      "obstacles": [
+        {"row": 1, "col": 1, "kind": "wall"},
+        {"kind": "wall", "row": 1, "col": 3},
+        {"row": 3, "col": 1, "kind": "wall"},
+        {"col": 3, "kind": "wall", "row": 3}
+      ],
+      "difficulty": "medium", "parMoves": 9, "parTime": 100,
+      "diagonalsEnabled": false, "title": "Quad Block"
+    },
+    {
+      "id": "w2_l005", "worldID": 2, "index": 5,
+      "gridRows": 6, "gridCols": 6,
+      "arrows": [
+        {"row": 1, "col": 0, "direction": "up"},
+        {"row": 0, "col": 3, "direction": "up"},
+        {"row": 3, "col": 5, "direction": "down"},
+        {"row": 2, "col": 1, "direction": "left"},
+        {"row": 5, "col": 2, "direction": "left"},
+        {"row": 4, "col": 4, "direction": "down"},
+        {"row": 0, "col": 1, "direction": "left"},
+        {"row": 2, "col": 5, "direction": "right"},
+        {"row": 0, "col": 5, "direction": "up"}
+      ],
+      "obstacles": [
+        {"row": 2, "col": 2, "kind": "wall"},
+        {"row": 3, "col": 3, "kind": "wall"}
+      ],
+      "difficulty": "medium", "parMoves": 9, "parTime": 105,
+      "diagonalsEnabled": false, "title": "Six by Six"
+    },
+    {
+      "id": "w2_l006", "worldID": 2, "index": 6,
+      "gridRows": 6, "gridCols": 6,
+      "arrows": [
+        {"row": 3, "col": 4, "direction": "down"},
+        {"row": 1, "col": 2, "direction": "left"},
+        {"row": 1, "col": 0, "direction": "down"},
+        {"row": 4, "col": 2, "direction": "down"},
+        {"row": 5, "col": 0, "direction": "left"},
+        {"row": 5, "col": 1, "direction": "down"},
+        {"row": 2, "col": 4, "direction": "left"},
+        {"row": 2, "col": 3, "direction": "left"},
+        {"row": 0, "col": 4, "direction": "up"},
+        {"row": 0, "col": 0, "direction": "up"}
       ],
       "obstacles": [
         {"row": 1, "col": 3, "kind": "wall"},
-        {"row": 3, "col": 1, "kind": "wall"},
-        {"row": 0, "col": 5, "kind": "wall"},
-        {"row": 5, "col": 0, "kind": "wall"}
+        {"col": 1, "kind": "wall", "row": 3},
+        {"row": 3, "col": 5, "kind": "wall"},
+        {"kind": "wall", "row": 5, "col": 3}
       ],
-      "difficulty": "medium",
-      "parMoves": 12,
-      "parTime": 120,
-      "diagonalsEnabled": false,
-      "title": "Maze Runner"
+      "difficulty": "medium", "parMoves": 10, "parTime": 115,
+      "diagonalsEnabled": false, "title": "Cross Block"
     },
     {
-      "id": "w2_l004",
-      "worldID": 2,
-      "index": 4,
-      "gridRows": 6,
-      "gridCols": 6,
+      "id": "w2_l007", "worldID": 2, "index": 7,
+      "gridRows": 6, "gridCols": 6,
       "arrows": [
-        {"row": 0, "col": 0, "direction": "right"},
-        {"row": 0, "col": 5, "direction": "down"},
-        {"row": 5, "col": 5, "direction": "left"},
-        {"row": 5, "col": 0, "direction": "up"},
-        {"row": 1, "col": 0, "direction": "right"},
-        {"row": 1, "col": 4, "direction": "up"},
-        {"row": 0, "col": 4, "direction": "right"},
-        {"row": 2, "col": 1, "direction": "down"},
-        {"row": 4, "col": 1, "direction": "right"},
-        {"row": 4, "col": 3, "direction": "up"},
-        {"row": 3, "col": 3, "direction": "right"},
-        {"row": 3, "col": 5, "direction": "down"}
-      ],
-      "obstacles": [
-        {"row": 2, "col": 3, "kind": "ice"},
-        {"row": 3, "col": 2, "kind": "ice"},
-        {"row": 1, "col": 5, "kind": "wall"}
-      ],
-      "difficulty": "hard",
-      "parMoves": 12,
-      "parTime": 130,
-      "diagonalsEnabled": false,
-      "title": "Ice Slide"
-    },
-    {
-      "id": "w2_l005",
-      "worldID": 2,
-      "index": 5,
-      "gridRows": 6,
-      "gridCols": 6,
-      "arrows": [
-        {"row": 0, "col": 0, "direction": "right"},
-        {"row": 0, "col": 1, "direction": "down"},
-        {"row": 5, "col": 1, "direction": "right"},
         {"row": 5, "col": 2, "direction": "up"},
-        {"row": 0, "col": 2, "direction": "right"},
-        {"row": 0, "col": 3, "direction": "down"},
-        {"row": 5, "col": 3, "direction": "right"},
-        {"row": 5, "col": 4, "direction": "up"},
-        {"row": 0, "col": 4, "direction": "right"},
-        {"row": 0, "col": 5, "direction": "down"},
-        {"row": 5, "col": 5, "direction": "left"},
-        {"row": 5, "col": 0, "direction": "up"},
-        {"row": 2, "col": 2, "direction": "right"},
-        {"row": 3, "col": 3, "direction": "left"}
+        {"row": 5, "col": 5, "direction": "down"},
+        {"row": 1, "col": 3, "direction": "right"},
+        {"row": 0, "col": 2, "direction": "left"},
+        {"row": 3, "col": 2, "direction": "left"},
+        {"row": 0, "col": 5, "direction": "up"},
+        {"row": 3, "col": 1, "direction": "left"},
+        {"row": 0, "col": 4, "direction": "down"},
+        {"row": 1, "col": 0, "direction": "up"},
+        {"row": 5, "col": 0, "direction": "left"},
+        {"row": 4, "col": 4, "direction": "down"}
       ],
       "obstacles": [
-        {"row": 2, "col": 4, "kind": "portal", "portalID": 1, "portalColor": "purple"},
-        {"row": 4, "col": 1, "kind": "portal", "portalID": 1, "portalColor": "purple"}
+        {"row": 0, "col": 3, "kind": "wall"},
+        {"kind": "wall", "row": 2, "col": 1},
+        {"row": 2, "col": 5, "kind": "wall"},
+        {"col": 1, "kind": "wall", "row": 4},
+        {"kind": "wall", "col": 5, "row": 4}
       ],
-      "difficulty": "hard",
-      "parMoves": 14,
-      "parTime": 140,
-      "diagonalsEnabled": false,
-      "title": "Portal Puzzle"
+      "difficulty": "hard", "parMoves": 11, "parTime": 125,
+      "diagonalsEnabled": false, "title": "Diamond"
+    },
+    {
+      "id": "w2_l008", "worldID": 2, "index": 8,
+      "gridRows": 6, "gridCols": 6,
+      "arrows": [
+        {"row": 5, "col": 4, "direction": "down"},
+        {"row": 0, "col": 5, "direction": "right"},
+        {"row": 1, "col": 3, "direction": "right"},
+        {"row": 3, "col": 2, "direction": "right"},
+        {"row": 5, "col": 5, "direction": "right"},
+        {"row": 1, "col": 1, "direction": "up"},
+        {"row": 4, "col": 2, "direction": "down"},
+        {"row": 5, "col": 1, "direction": "down"},
+        {"row": 4, "col": 5, "direction": "right"},
+        {"row": 3, "col": 4, "direction": "right"},
+        {"row": 3, "col": 0, "direction": "up"},
+        {"row": 1, "col": 5, "direction": "right"}
+      ],
+      "obstacles": [
+        {"row": 1, "col": 2, "kind": "wall"},
+        {"col": 4, "kind": "wall", "row": 2},
+        {"row": 3, "col": 1, "kind": "wall"},
+        {"kind": "wall", "row": 4, "col": 3}
+      ],
+      "difficulty": "hard", "parMoves": 12, "parTime": 130,
+      "diagonalsEnabled": false, "title": "Full Wall"
+    },
+    {
+      "id": "w2_l009", "worldID": 2, "index": 9,
+      "gridRows": 6, "gridCols": 6,
+      "arrows": [
+        {"row": 5, "col": 5, "direction": "down"},
+        {"row": 3, "col": 0, "direction": "left"},
+        {"row": 5, "col": 4, "direction": "down"},
+        {"row": 1, "col": 0, "direction": "left"},
+        {"row": 1, "col": 3, "direction": "down"},
+        {"row": 0, "col": 5, "direction": "up"},
+        {"row": 0, "col": 3, "direction": "up"},
+        {"row": 5, "col": 3, "direction": "left"},
+        {"row": 0, "col": 2, "direction": "left"},
+        {"row": 0, "col": 1, "direction": "left"},
+        {"row": 2, "col": 2, "direction": "right"},
+        {"row": 4, "col": 2, "direction": "down"},
+        {"row": 3, "col": 1, "direction": "down"}
+      ],
+      "obstacles": [
+        {"row": 1, "col": 1, "kind": "wall"},
+        {"kind": "wall", "row": 1, "col": 4},
+        {"row": 3, "col": 2, "kind": "wall"},
+        {"col": 0, "kind": "wall", "row": 4},
+        {"kind": "wall", "col": 5, "row": 4}
+      ],
+      "difficulty": "expert", "parMoves": 13, "parTime": 140,
+      "diagonalsEnabled": false, "title": "Nine Walls"
+    },
+    {
+      "id": "w2_l010", "worldID": 2, "index": 10,
+      "gridRows": 6, "gridCols": 6,
+      "arrows": [
+        {"row": 4, "col": 5, "direction": "right"},
+        {"row": 0, "col": 4, "direction": "right"},
+        {"row": 2, "col": 3, "direction": "right"},
+        {"row": 1, "col": 1, "direction": "up"},
+        {"row": 0, "col": 5, "direction": "up"},
+        {"row": 4, "col": 1, "direction": "left"},
+        {"row": 4, "col": 4, "direction": "down"},
+        {"row": 3, "col": 2, "direction": "left"},
+        {"row": 5, "col": 5, "direction": "down"},
+        {"row": 0, "col": 0, "direction": "left"},
+        {"row": 0, "col": 3, "direction": "up"},
+        {"row": 5, "col": 4, "direction": "down"},
+        {"row": 1, "col": 5, "direction": "right"},
+        {"row": 4, "col": 0, "direction": "left"}
+      ],
+      "obstacles": [
+        {"row": 0, "col": 2, "kind": "wall"},
+        {"col": 4, "kind": "wall", "row": 1},
+        {"row": 2, "col": 0, "kind": "wall"},
+        {"kind": "wall", "row": 3, "col": 5},
+        {"kind": "wall", "col": 2, "row": 4},
+        {"row": 5, "kind": "wall", "col": 0}
+      ],
+      "difficulty": "expert", "parMoves": 14, "parTime": 150,
+      "diagonalsEnabled": false, "title": "The Grid"
     }
   ]
 }

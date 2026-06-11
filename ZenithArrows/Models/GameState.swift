@@ -156,13 +156,21 @@ final class GameState: ObservableObject {
 
     /// Returns the validated SlidePath if the tap is legal, otherwise nil.
     /// Also fires wrong-tap penalty if arrow exists but is blocked.
+    /// Accepts both .playing and .animating phases — the scene's slidingArrowIDs
+    /// set prevents concurrent animation on the same arrow, so this is safe.
     @discardableResult
     func handleTap(at position: GridPosition, moveValidator: MoveValidator) -> SlidePath? {
-        guard phase == .playing,
-              !pendingRemovalIDs.contains(where: { _ in false }), // always passes
-              let arrow = grid.arrow(at: position),
+        // Allow taps in playing or animating (for queued sequential taps)
+        guard phase == .playing || phase == .animating else { return nil }
+        guard let arrow = grid.arrow(at: position),
               !arrow.isRemoved,
-              !pendingRemovalIDs.contains(arrow.id) else { return nil }
+              !pendingRemovalIDs.contains(arrow.id) else {
+            // Tapped empty cell or already-sliding arrow — count as wrong tap
+            if phase == .playing {
+                registerWrongTap(arrowID: nil)
+            }
+            return nil
+        }
 
         if let path = moveValidator.validateMove(arrow: arrow, in: grid) {
             commitMove(arrow: arrow, path: path)
@@ -207,7 +215,7 @@ final class GameState: ObservableObject {
     /// Called by the animation layer when the slide-out finishes.
     func finaliseRemoval(arrowID: UUID) {
         pendingRemovalIDs.remove(arrowID)
-        if let stars = _pendingWinStars, pendingRemovalIDs.isEmpty {
+        if let stars = _pendingWinStars, grid.activeArrows.isEmpty {
             _pendingWinStars = nil
             phase = .levelComplete(stars: stars)
             stopTimer()
@@ -218,14 +226,15 @@ final class GameState: ObservableObject {
 
     // MARK: - Wrong Tap
 
-    private func registerWrongTap(arrowID: UUID) {
+    private func registerWrongTap(arrowID: UUID?) {
         mistakes += 1
         lives = max(0, lives - 1)
-        wrongTapArrowID = arrowID
-
-        Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 500_000_000)
-            if wrongTapArrowID == arrowID { wrongTapArrowID = nil }
+        if let arrowID {
+            wrongTapArrowID = arrowID
+            Task { @MainActor in
+                try? await Task.sleep(nanoseconds: 500_000_000)
+                if wrongTapArrowID == arrowID { wrongTapArrowID = nil }
+            }
         }
 
         if lives == 0 {

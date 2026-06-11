@@ -164,16 +164,23 @@ final class GameScene: SKScene {
         let scenePoint = touch.location(in: gridNode)
         guard let gridPos = gridNode?.gridPosition(for: scenePoint) else { return }
 
-        // Dispatch to main actor for gameState access
+        // All model access must happen on MainActor.
+        // We validate and commit on the model side first, then animate.
         Task { @MainActor [weak self] in
-            guard let self, let gs = self.gameState,
-                  gs.phase == .playing else { return }
+            guard let self,
+                  let gs = self.gameState,
+                  case .playing = gs.phase else { return }
+
             guard let arrow = gs.grid.arrow(at: gridPos),
+                  !arrow.isRemoved,
                   !self.slidingArrowIDs.contains(arrow.id) else { return }
 
             if let path = self.moveValidator.validateMove(arrow: arrow, in: gs.grid) {
+                // Commit to model first, then animate
+                // (triggerSlide handles the model commit via handleTap internally)
                 self.triggerSlide(arrow: arrow, path: path)
             } else {
+                // Invalid tap — register wrong tap penalty only once
                 gs.handleTap(at: gridPos, moveValidator: self.moveValidator)
             }
         }
@@ -189,10 +196,18 @@ final class GameScene: SKScene {
         hapticManager.arrowTap()
         audioManager.play(.slide)
 
-        // Commit to model FIRST
-        gameState.handleTap(at: arrow.position, moveValidator: moveValidator)
+        // Commit move to model: use handleTap which handles
+        // move recording, combo, undo stack, win detection.
+        // We pass the already-validated move through; handleTap
+        // re-validates internally but the path will be identical.
+        let committed = gameState.handleTap(at: arrow.position, moveValidator: moveValidator)
+        guard committed != nil else {
+            // Should not happen (we pre-validated), but recover gracefully
+            slidingArrowIDs.remove(arrow.id)
+            return
+        }
 
-        // Animate the node
+        // Animate the node sliding out
         node.animateSlide(path: path, cellSize: gridNode.cellSize) { [weak self] in
             guard let self else { return }
             self.slidingArrowIDs.remove(arrow.id)
@@ -200,9 +215,9 @@ final class GameScene: SKScene {
             self.arrowNodes.removeValue(forKey: arrow.id)
 
             Task { @MainActor [weak self] in
-                self?.gameState?.finaliseRemoval(arrowID: arrow.id)
-                // After each successful removal, refresh moveable hints
-                self?.highlightMoveableArrows(briefly: false)
+                guard let self else { return }
+                self.gameState?.finaliseRemoval(arrowID: arrow.id)
+                self.highlightMoveableArrows(briefly: false)
             }
         }
     }

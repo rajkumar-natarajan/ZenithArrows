@@ -19,6 +19,8 @@ struct HomeView: View {
     @State private var showShop = false
     @State private var showWeekly = false
     @State private var showAchievements = false
+    @State private var showStatistics = false
+    @State private var showEvents = false
     @State private var logoRotation: Double = 0
     @State private var appeared = false
 
@@ -89,6 +91,8 @@ struct HomeView: View {
         .sheet(isPresented: $showShop) { ShopView() }
         .sheet(isPresented: $showWeekly) { WeeklyChallengeView() }
         .sheet(isPresented: $showAchievements) { AchievementsView() }
+        .sheet(isPresented: $showStatistics) { StatisticsView() }
+        .sheet(isPresented: $showEvents) { SeasonalEventView() }
         .onAppear {
             progressMgr.authenticateGameCenter()
             withAnimation(.easeOut(duration: 0.5)) { appeared = true }
@@ -217,9 +221,15 @@ struct HomeView: View {
     }
 
     private var bottomBar: some View {
-        HStack(spacing: 32) {
+        HStack(spacing: 28) {
             BottomBarButton(systemImage: "bag.fill", label: "Shop") {
                 showShop = true
+            }
+            BottomBarButton(systemImage: "chart.bar.fill", label: "Stats") {
+                showStatistics = true
+            }
+            BottomBarButton(systemImage: "sparkles", label: "Events") {
+                showEvents = true
             }
             BottomBarButton(systemImage: "gearshape.fill", label: "Settings") {
                 showSettings = true

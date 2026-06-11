@@ -16,6 +16,7 @@ struct GameBoardView: View {
     @StateObject private var gameState: GameState
     @StateObject private var themeManager = ThemeManager.shared
     @StateObject private var trailVM = TrailEffectViewModel()     // Feature 11
+    @StateObject private var boosters = BoosterManager.shared
 
     private let moveValidator = MoveValidator()
     private let hintEngine    = HintEngine()
@@ -27,6 +28,7 @@ struct GameBoardView: View {
     @State private var showTutorialStep: Int? = nil
     @State private var sceneSize: CGSize = .zero
     @State private var showReplay = false   // Feature 5
+    @State private var hintsUsedThisLevel = 0
 
     private var isTutorialLevel: Bool {
         levelDefinition.difficulty == .tutorial &&
@@ -66,14 +68,29 @@ struct GameBoardView: View {
                         HapticManager.shared.buttonTap()
                         AudioManager.shared.play(.hint)
                         gameState.useHint(hintEngine: hintEngine)
+                        hintsUsedThisLevel += 1
                     },
                     onFreeHint: {  // Feature 17
                         HapticManager.shared.buttonTap()
                         AudioManager.shared.play(.hint)
                         gameState.useFreeHint(hintEngine: hintEngine)
+                        hintsUsedThisLevel += 1
                     }
                 )
                 .padding(.top, 4)
+
+                // Booster bar
+                BoosterBarView(
+                    gameState: gameState,
+                    hintEngine: hintEngine,
+                    onSkip: {
+                        // Skip = instant 1-star complete
+                        completedStars = 1
+                        LevelManager.shared.saveProgress(levelID: levelDefinition.id, stars: 1)
+                        ProgressManager.shared.recordLevelComplete(stars: 1, moves: gameState.moves)
+                        showEndLevel = true
+                    }
+                )
 
                 GeometryReader { geo in
                     ZStack {
@@ -172,6 +189,9 @@ struct GameBoardView: View {
         guard gameState.phase == .idle else { return }
         gameState.phase = .playing
         gameState.startTimer()
+        hintsUsedThisLevel = 0
+        StatisticsManager.shared.recordLevelStarted(levelID: levelDefinition.id)
+        BoosterManager.shared.claimDailyBonus()
     }
 
     @MainActor
@@ -194,6 +214,15 @@ struct GameBoardView: View {
             completedStars = stars
             LevelManager.shared.saveProgress(levelID: levelDefinition.id, stars: stars)
             ProgressManager.shared.recordLevelComplete(stars: stars, moves: gameState.moves)
+            BoosterManager.shared.rewardForLevel(stars: stars)
+            StatisticsManager.shared.recordLevelCompleted(
+                levelID: levelDefinition.id,
+                moves: gameState.moves,
+                time: gameState.elapsedTime,
+                hintsUsed: hintsUsedThisLevel,
+                boostersUsed: 0,
+                maxCombo: gameState.comboEngine.currentCombo.streak
+            )
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.9) {
                 showEndLevel = true
             }

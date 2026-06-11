@@ -1,81 +1,142 @@
 {
   "id": 3,
-  "name": "Complexity",
+  "name": "Diagonals",
   "themeKey": "neon",
-  "description": "7×7 and 8×8 grids with color-coded arrows and advanced obstacles",
+  "description": "8 directions unlocked — arrows can fly diagonally",
   "requiredStarsToUnlock": 40,
   "isUnlocked": false,
   "levels": [
     {
-      "id": "w3_l001",
-      "worldID": 3,
-      "index": 1,
-      "gridRows": 7,
-      "gridCols": 7,
+      "id": "w3_l001", "worldID": 3, "index": 1,
+      "gridRows": 5, "gridCols": 5,
       "arrows": [
-        {"row": 0, "col": 0, "direction": "right", "color": "red"},
-        {"row": 0, "col": 3, "direction": "down",  "color": "blue"},
-        {"row": 3, "col": 6, "direction": "left",  "color": "green"},
-        {"row": 6, "col": 3, "direction": "up",    "color": "yellow"},
-        {"row": 0, "col": 6, "direction": "down",  "color": "white"},
-        {"row": 6, "col": 0, "direction": "right", "color": "white"},
-        {"row": 1, "col": 1, "direction": "right", "color": "red"},
-        {"row": 1, "col": 4, "direction": "down",  "color": "blue"},
-        {"row": 4, "col": 5, "direction": "left",  "color": "green"},
-        {"row": 5, "col": 2, "direction": "up",    "color": "yellow"},
-        {"row": 3, "col": 3, "direction": "right", "color": "purple"},
-        {"row": 3, "col": 4, "direction": "down",  "color": "orange"},
-        {"row": 5, "col": 4, "direction": "left",  "color": "purple"},
-        {"row": 5, "col": 3, "direction": "up",    "color": "orange"}
+        {"row": 4, "col": 1, "direction": "right"},
+        {"row": 4, "col": 0, "direction": "downLeft"},
+        {"row": 4, "col": 2, "direction": "upRight"},
+        {"row": 0, "col": 1, "direction": "downLeft"}
       ],
-      "obstacles": [
-        {"row": 2, "col": 2, "kind": "wall"},
-        {"row": 2, "col": 4, "kind": "wall"},
-        {"row": 4, "col": 2, "kind": "wall"},
-        {"row": 4, "col": 4, "kind": "wall"}
-      ],
-      "difficulty": "hard",
-      "parMoves": 14,
-      "parTime": 150,
-      "diagonalsEnabled": false,
-      "title": "Color Storm"
+      "obstacles": [],
+      "difficulty": "easy", "parMoves": 4, "parTime": 55,
+      "diagonalsEnabled": true, "title": "Diagonal Intro"
     },
     {
-      "id": "w3_l002",
-      "worldID": 3,
-      "index": 2,
-      "gridRows": 8,
-      "gridCols": 8,
+      "id": "w3_l002", "worldID": 3, "index": 2,
+      "gridRows": 5, "gridCols": 5,
       "arrows": [
-        {"row": 0, "col": 0, "direction": "right"},
-        {"row": 0, "col": 2, "direction": "right"},
-        {"row": 0, "col": 4, "direction": "right"},
-        {"row": 0, "col": 6, "direction": "down"},
-        {"row": 2, "col": 7, "direction": "down"},
-        {"row": 4, "col": 7, "direction": "down"},
-        {"row": 6, "col": 7, "direction": "left"},
-        {"row": 7, "col": 6, "direction": "left"},
-        {"row": 7, "col": 4, "direction": "left"},
-        {"row": 7, "col": 2, "direction": "left"},
-        {"row": 7, "col": 0, "direction": "up"},
-        {"row": 6, "col": 0, "direction": "up"},
-        {"row": 4, "col": 0, "direction": "up"},
-        {"row": 2, "col": 0, "direction": "right"},
-        {"row": 3, "col": 3, "direction": "right"},
-        {"row": 3, "col": 5, "direction": "down"},
-        {"row": 5, "col": 5, "direction": "left"},
-        {"row": 5, "col": 3, "direction": "up"}
+        {"row": 3, "col": 2, "direction": "right"},
+        {"row": 0, "col": 2, "direction": "upLeft"},
+        {"row": 0, "col": 4, "direction": "up"},
+        {"row": 0, "col": 0, "direction": "down"},
+        {"row": 1, "col": 0, "direction": "left"}
       ],
-      "obstacles": [
-        {"row": 0, "col": 7, "kind": "wall"},
-        {"row": 7, "col": 7, "kind": "ice"},
-        {"row": 3, "col": 4, "kind": "trap"}
+      "obstacles": [],
+      "difficulty": "easy", "parMoves": 5, "parTime": 65,
+      "diagonalsEnabled": true, "title": "Five Diag"
+    },
+    {
+      "id": "w3_l003", "worldID": 3, "index": 3,
+      "gridRows": 5, "gridCols": 5,
+      "arrows": [
+        {"row": 1, "col": 4, "direction": "downLeft"},
+        {"row": 1, "col": 0, "direction": "downLeft"},
+        {"row": 4, "col": 1, "direction": "upLeft"},
+        {"row": 1, "col": 2, "direction": "downRight"},
+        {"row": 4, "col": 2, "direction": "downRight"},
+        {"row": 0, "col": 4, "direction": "left"}
       ],
-      "difficulty": "expert",
-      "parMoves": 18,
-      "parTime": 180,
-      "diagonalsEnabled": false,
-      "title": "Labyrinth"
+      "obstacles": [],
+      "difficulty": "medium", "parMoves": 6, "parTime": 75,
+      "diagonalsEnabled": true, "title": "Six Angles"
+    },
+    {
+      "id": "w3_l004", "worldID": 3, "index": 4,
+      "gridRows": 5, "gridCols": 5,
+      "arrows": [
+        {"row": 3, "col": 1, "direction": "down"},
+        {"row": 1, "col": 1, "direction": "up"},
+        {"row": 4, "col": 2, "direction": "downLeft"},
+        {"row": 3, "col": 2, "direction": "downRight"},
+        {"row": 1, "col": 4, "direction": "downRight"},
+        {"row": 0, "col": 0, "direction": "left"},
+        {"row": 4, "col": 4, "direction": "upRight"}
+      ],
+      "obstacles": [],
+      "difficulty": "medium", "parMoves": 7, "parTime": 85,
+      "diagonalsEnabled": true, "title": "Seven Ways"
+    },
+    {
+      "id": "w3_l005", "worldID": 3, "index": 5,
+      "gridRows": 6, "gridCols": 6,
+      "arrows": [
+        {"row": 5, "col": 2, "direction": "up"},
+        {"row": 2, "col": 4, "direction": "downLeft"},
+        {"row": 0, "col": 4, "direction": "left"},
+        {"row": 1, "col": 2, "direction": "left"},
+        {"row": 5, "col": 5, "direction": "downRight"},
+        {"row": 4, "col": 2, "direction": "upLeft"},
+        {"row": 2, "col": 0, "direction": "downLeft"},
+        {"row": 3, "col": 4, "direction": "down"}
+      ],
+      "obstacles": [],
+      "difficulty": "medium", "parMoves": 8, "parTime": 95,
+      "diagonalsEnabled": true, "title": "Six by Six Diag"
+    },
+    {
+      "id": "w3_l006", "worldID": 3, "index": 6,
+      "gridRows": 6, "gridCols": 6,
+      "arrows": [
+        {"row": 1, "col": 1, "direction": "up"},
+        {"row": 3, "col": 5, "direction": "upLeft"},
+        {"row": 5, "col": 3, "direction": "upLeft"},
+        {"row": 1, "col": 4, "direction": "upRight"},
+        {"row": 5, "col": 0, "direction": "left"},
+        {"row": 4, "col": 4, "direction": "left"},
+        {"row": 5, "col": 4, "direction": "right"},
+        {"row": 1, "col": 3, "direction": "downLeft"},
+        {"row": 0, "col": 2, "direction": "down"}
+      ],
+      "obstacles": [],
+      "difficulty": "hard", "parMoves": 9, "parTime": 110,
+      "diagonalsEnabled": true, "title": "Nine Angles"
+    },
+    {
+      "id": "w3_l007", "worldID": 3, "index": 7,
+      "gridRows": 6, "gridCols": 6,
+      "arrows": [
+        {"row": 4, "col": 3, "direction": "down"},
+        {"row": 0, "col": 1, "direction": "downRight"},
+        {"row": 3, "col": 0, "direction": "down"},
+        {"row": 2, "col": 5, "direction": "down"},
+        {"row": 4, "col": 5, "direction": "upRight"},
+        {"row": 2, "col": 0, "direction": "upRight"},
+        {"row": 3, "col": 5, "direction": "upLeft"},
+        {"row": 4, "col": 2, "direction": "up"},
+        {"row": 1, "col": 2, "direction": "left"},
+        {"row": 1, "col": 4, "direction": "up"}
+      ],
+      "obstacles": [],
+      "difficulty": "hard", "parMoves": 10, "parTime": 120,
+      "diagonalsEnabled": true, "title": "Ten Directions"
+    },
+    {
+      "id": "w3_l008", "worldID": 3, "index": 8,
+      "gridRows": 6, "gridCols": 6,
+      "arrows": [
+        {"row": 2, "col": 0, "direction": "downLeft"},
+        {"row": 2, "col": 4, "direction": "down"},
+        {"row": 0, "col": 3, "direction": "downLeft"},
+        {"row": 4, "col": 3, "direction": "down"},
+        {"row": 4, "col": 5, "direction": "upLeft"},
+        {"row": 2, "col": 1, "direction": "upLeft"},
+        {"row": 1, "col": 5, "direction": "left"},
+        {"row": 5, "col": 2, "direction": "downLeft"},
+        {"row": 3, "col": 5, "direction": "upRight"},
+        {"row": 0, "col": 2, "direction": "upLeft"},
+        {"row": 5, "col": 1, "direction": "down"}
+      ],
+      "obstacles": [],
+      "difficulty": "expert", "parMoves": 11, "parTime": 135,
+      "diagonalsEnabled": true, "title": "Full Compass"
     }
   ]
 }

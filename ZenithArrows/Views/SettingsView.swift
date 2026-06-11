@@ -10,6 +10,7 @@ struct SettingsView: View {
     @StateObject private var audio    = AudioManager.shared
     @StateObject private var theme    = ThemeManager.shared
     @StateObject private var colorblind = ColorblindManager.shared
+    @StateObject private var gridOverlay = GridOverlayManager.shared
     @Environment(\.dismiss) private var dismiss
     @State private var notificationsEnabled = false
     @State private var showNotificationAlert = false
@@ -38,6 +39,7 @@ struct SettingsView: View {
                             }
                             .pickerStyle(.segmented)
                         }
+                        Toggle("Show Moveable Indicators", isOn: $gridOverlay.showMoveableIndicators)
                     }
                     .listRowBackground(theme.current.buttonBackground)
 

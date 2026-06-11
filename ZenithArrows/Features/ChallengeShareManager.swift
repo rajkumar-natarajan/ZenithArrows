@@ -65,7 +65,6 @@ struct SharedChallenge: Codable {
 
 // MARK: - ChallengeShareManager
 
-@MainActor
 final class ChallengeShareManager {
 
     static let shared = ChallengeShareManager()
