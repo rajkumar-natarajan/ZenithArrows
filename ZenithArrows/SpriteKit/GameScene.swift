@@ -34,6 +34,23 @@ final class GameScene: SKScene {
         observeGameState()
     }
 
+    /// Called by SpriteKit whenever the scene/view size changes (e.g. first valid layout).
+    /// Re-builds the grid so cellSize is computed from the real view dimensions.
+    override func didChangeSize(_ oldSize: CGSize) {
+        // Only rebuild when size goes from ~zero to a real value
+        guard size.width > 1, size.height > 1,
+              (oldSize.width < 1 || oldSize.height < 1) else { return }
+        guard gameState != nil else { return }
+        // Remove stale grid and arrows, rebuild with correct cellSize
+        gridNode?.removeFromParent()
+        gridNode = nil
+        arrowNodes.values.forEach { $0.removeFromParent() }
+        arrowNodes.removeAll()
+        slidingArrowIDs.removeAll()
+        setupGrid()
+        placeAllArrows(animated: false)
+    }
+
     // MARK: - Setup
 
     private var cellSize: CGFloat {
@@ -46,6 +63,9 @@ final class GameScene: SKScene {
         let maxDim = max(def.gridRows, def.gridCols)
         let availableSize = min(size.width, size.height) * 0.90
         let cs = floor(availableSize / CGFloat(maxDim))
+
+        // Guard: never build a grid with zero cell size
+        guard cs > 0 else { return }
 
         gridNode = GridNode(rows: def.gridRows, cols: def.gridCols,
                             cellSize: cs, theme: theme)
@@ -168,8 +188,11 @@ final class GameScene: SKScene {
         // We validate and commit on the model side first, then animate.
         Task { @MainActor [weak self] in
             guard let self,
-                  let gs = self.gameState,
-                  case .playing = gs.phase else { return }
+                  let gs = self.gameState else { return }
+            // Accept both .playing and .animating — handleTap guards concurrent removal
+            guard case .playing = gs.phase else {
+                if case .animating = gs.phase { } else { return }
+            }
 
             guard let arrow = gs.grid.arrow(at: gridPos),
                   !arrow.isRemoved,

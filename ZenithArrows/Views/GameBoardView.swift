@@ -115,24 +115,31 @@ struct GameBoardView: View {
             }
 
             // Tutorial overlay
+            // Tutorial hint — shown AFTER game starts so it never blocks touches
             if let step = showTutorialStep, step < tutorialSteps.count {
-                Color.black.opacity(0.4).ignoresSafeArea()
-                    .transition(.opacity)
-                TutorialOverlayView(step: tutorialSteps[step]) {
-                    withAnimation {
-                        let next = step + 1
-                        showTutorialStep = next < tutorialSteps.count ? next : nil
-                        if showTutorialStep == nil { beginPlaying() }
+                // Non-blocking: game is already playing; overlay sits at bottom
+                // without a full-screen touch-intercepting background
+                VStack {
+                    Spacer()
+                    TutorialOverlayView(step: tutorialSteps[step]) {
+                        withAnimation {
+                            let next = step + 1
+                            showTutorialStep = next < tutorialSteps.count ? next : nil
+                        }
                     }
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .padding(.bottom, 12)
                 }
-                .transition(.scale.combined(with: .opacity))
+                .allowsHitTesting(true)   // only the card itself is interactive
+                .transition(.opacity)
+                .zIndex(5)
             }
         }
         .onAppear {
+            // Always start playing immediately — tutorial is now a non-blocking overlay
+            beginPlaying()
             if isTutorialLevel && levelDefinition.index == 1 {
                 showTutorialStep = 0
-            } else {
-                beginPlaying()
             }
         }
         .onChange(of: gameState.phase) { _, newPhase in
