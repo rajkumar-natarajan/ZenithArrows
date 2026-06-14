@@ -29,26 +29,40 @@ final class GameScene: SKScene {
 
     override func didMove(to view: SKView) {
         backgroundColor = .clear
-        setupGrid()
-        placeAllArrows(animated: true)
+        // Only build if we have a real size; otherwise didChangeSize will handle it
+        if size.width > 1 && size.height > 1 {
+            setupGrid()
+            placeAllArrows(animated: true)
+        }
         observeGameState()
     }
 
     /// Called by SpriteKit whenever the scene/view size changes (e.g. first valid layout).
     /// Re-builds the grid so cellSize is computed from the real view dimensions.
     override func didChangeSize(_ oldSize: CGSize) {
-        // Only rebuild when size goes from ~zero to a real value
-        guard size.width > 1, size.height > 1,
-              (oldSize.width < 1 || oldSize.height < 1) else { return }
+        guard size.width > 1, size.height > 1 else { return }
         guard gameState != nil else { return }
-        // Remove stale grid and arrows, rebuild with correct cellSize
+
+        let def = gameState.levelDefinition
+        let maxDim = max(def.gridRows, def.gridCols)
+        let availableSize = min(size.width, size.height) * 0.90
+        let newCS = floor(availableSize / CGFloat(maxDim))
+        guard newCS > 0 else { return }
+
+        // If gridNode already built with same cellSize, just reposition and skip rebuild
+        if let existing = gridNode, existing.cellSize == newCS {
+            existing.position = CGPoint(x: size.width / 2, y: size.height / 2)
+            return
+        }
+
+        // Full rebuild: correct cellSize or first build after didMove with zero size
         gridNode?.removeFromParent()
         gridNode = nil
         arrowNodes.values.forEach { $0.removeFromParent() }
         arrowNodes.removeAll()
         slidingArrowIDs.removeAll()
         setupGrid()
-        placeAllArrows(animated: false)
+        placeAllArrows(animated: gridNode != nil ? false : true)
     }
 
     // MARK: - Setup

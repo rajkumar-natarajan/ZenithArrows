@@ -27,6 +27,7 @@
 		45D8BCE3D492E4E2E00AFF3C /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE619277E266C1E7EC6197AF /* AVFoundation.framework */; };
 		47EE9C897023DC814DA0A16F /* TrailEffectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1C051BED2BD94F396F1C3B0 /* TrailEffectView.swift */; };
 		4A2911345EC9A619E53A63FF /* MoveValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E18C8957C65E14324D3023C /* MoveValidator.swift */; };
+		4CEF2EAA7C59E26BA628BAAB /* TapPipelineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E14F86B18C897C3D97AB62E7 /* TapPipelineTests.swift */; };
 		4E3282DDD4930E8F397CA4A5 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69FF7F4C7A693AAF994EC726 /* AudioToolbox.framework */; };
 		62E857577E6F2E5F2CD5DD0C /* AchievementManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4219B68F1F8E55A0D468A84E /* AchievementManager.swift */; };
 		64A696CF8DE9499009BD14A1 /* GridModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 654A5E6446CA36CC2EC02899 /* GridModel.swift */; };
@@ -135,6 +136,7 @@
 		DE1BB1BC3B2B57ECBC8E2090 /* GameBoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameBoardView.swift; sourceTree = "<group>"; };
 		DF21CA3ECEA33624389C44C7 /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		E147C420EAB835B2FE3BE7DE /* ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
+		E14F86B18C897C3D97AB62E7 /* TapPipelineTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TapPipelineTests.swift; sourceTree = "<group>"; };
 		E3DAD8C01EB286AD52DD2420 /* TimedChallengeManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TimedChallengeManager.swift; sourceTree = "<group>"; };
 		F45951F3B07278641F554805 /* SeasonalEventManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SeasonalEventManager.swift; sourceTree = "<group>"; };
 		F5323B0DDE623A105686574F /* GridOverlayManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GridOverlayManager.swift; sourceTree = "<group>"; };
@@ -329,6 +331,7 @@
 			children = (
 				7E64EC6CBAB4F053126C3C68 /* ZenithArrowsTests.swift */,
 				D2C3049E1DDCB6488884DDB2 /* CompetitorFeatureTests.swift */,
+				E14F86B18C897C3D97AB62E7 /* TapPipelineTests.swift */,
 			);
 			name = ZenithArrowsTests;
 			path = ZenithArrowsTests;
@@ -502,6 +505,7 @@
 			files = (
 				0767D652EAF57515CA6DE800 /* ZenithArrowsTests.swift in Sources */,
 				2B5D2DDFAEB9D77DD74523AE /* CompetitorFeatureTests.swift in Sources */,
+				4CEF2EAA7C59E26BA628BAAB /* TapPipelineTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
